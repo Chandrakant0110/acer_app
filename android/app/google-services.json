@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "884348080592",
+    "project_id": "acer-app-651fc",
+    "storage_bucket": "acer-app-651fc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884348080592:android:2e01412b0994742b1829d5",
+        "android_client_info": {
+          "package_name": "com.example.acer_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYaSzRMGby8safidOBh7wRXteRdXHZgmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
