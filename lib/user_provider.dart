@@ -27,11 +27,18 @@ class UserProvider extends ChangeNotifier {
   // Handle Firebase auth state changes
   void _onAuthStateChanged(auth.User? firebaseUser) {
     if (firebaseUser != null) {
+      // Get S-number from user metadata if available
+      String? snumber;
+      if (_prefs != null) {
+        snumber = _prefs!.getString('user_snumber');
+      }
+
       // Convert Firebase user to our User model
       _currentUser = User(
         name: firebaseUser.displayName ?? 'User',
         email: firebaseUser.email ?? '',
         phone: firebaseUser.phoneNumber ?? '',
+        snumber: snumber,
       );
 
       // Save to SharedPreferences for persistence
@@ -44,6 +51,7 @@ class UserProvider extends ChangeNotifier {
       // Clear from SharedPreferences
       if (_prefs != null) {
         _prefs!.remove('user');
+        _prefs!.remove('user_snumber');
       }
     }
     notifyListeners();
@@ -60,6 +68,7 @@ class UserProvider extends ChangeNotifier {
           email: userData['email'] ?? '',
           phone: userData['phone'] ?? '',
           imageUrl: userData['imageUrl'],
+          snumber: userData['snumber'], // Load S-number
         );
         notifyListeners();
       } catch (e) {
@@ -77,8 +86,14 @@ class UserProvider extends ChangeNotifier {
         'email': user.email,
         'phone': user.phone,
         'imageUrl': user.imageUrl,
+        'snumber': user.snumber, // Save S-number
       };
       _prefs!.setString('user', jsonEncode(userData));
+
+      // Also save S-number separately for easy access during auth state changes
+      if (user.snumber != null) {
+        _prefs!.setString('user_snumber', user.snumber!);
+      }
     }
   }
 
@@ -95,7 +110,8 @@ class UserProvider extends ChangeNotifier {
   }
 
   // Update specific user fields
-  void updateUserData({String? name, String? phone, String? imageUrl}) {
+  void updateUserData(
+      {String? name, String? phone, String? imageUrl, String? snumber}) {
     if (_currentUser == null) return;
 
     _currentUser = User(
@@ -103,6 +119,7 @@ class UserProvider extends ChangeNotifier {
       email: _currentUser!.email,
       phone: phone ?? _currentUser!.phone,
       imageUrl: imageUrl ?? _currentUser!.imageUrl,
+      snumber: snumber ?? _currentUser!.snumber, // Update S-number
     );
 
     // Save updated user to SharedPreferences
@@ -132,6 +149,7 @@ class UserProvider extends ChangeNotifier {
     // Clear from SharedPreferences
     if (_prefs != null) {
       _prefs!.remove('user');
+      _prefs!.remove('user_snumber');
     }
 
     notifyListeners();

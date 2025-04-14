@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart'; // Ensure this path is correct
-import '../models/user.dart'; // Ensure this path is correct
+import '../models/user_model.dart'; // Changed from user.dart to user_model.dart
 
 class EditProfilePage extends StatefulWidget {
   final User user; // Add user parameter

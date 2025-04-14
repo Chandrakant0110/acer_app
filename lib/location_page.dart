@@ -676,10 +676,6 @@ class _LocationPageState extends State<LocationPage>
                 children: [
                   Row(
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.pop(context),
-                      ),
                       const Expanded(
                         child: Text(
                           'Store Locator',
@@ -691,7 +687,6 @@ class _LocationPageState extends State<LocationPage>
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      const SizedBox(width: 48), // Balance for back button
                     ],
                   ),
                   const SizedBox(height: 16),

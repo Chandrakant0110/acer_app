@@ -13,6 +13,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'error_page.dart';
 import 'pages/my_orders_page.dart'; // Import the new MyOrdersPage
+import 'pages/privacy_policy_page.dart';
+// Import the new MyOrdersPage
+// Import the new MyOrdersPage
+// Import the new MyOrdersPage
 
 // Define Acer brand colors
 const Color acerPrimaryColor = Color(0xFF83B81A); // Acer green
@@ -1617,9 +1621,11 @@ class _SettingsPageState extends State<SettingsPage>
                               icon: Icons.security_outlined,
                               title: 'Privacy Policy',
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Privacy Policy coming soon'),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PrivacyPolicyPage(),
                                   ),
                                 );
                               },
@@ -4112,6 +4118,13 @@ class _LoginPageState extends State<LoginPage>
                           _buildAnimatedLoginButton(),
 
                           const SizedBox(height: 24),
+                          ElevatedButton(
+                            onPressed: () {
+                              // Implement the Google sign In feature here..
+                            },
+                            child: const Text('Sign In with Google'),
+                          ),
+                          const SizedBox(height: 24),
 
                           // Sign up link
                           _buildSignUpContainer(),
@@ -5508,7 +5521,7 @@ class HomeContent extends StatelessWidget {
                     'Predator Series',
                     'Ultimate Gaming Experience',
                     acerSecondaryColor,
-                    'https://cdn.mos.cms.futurecdn.net/hrxPRFMhZDvMZ3tV3wAKCk.jpg',
+                    'https://sm.pcmag.com/t/pcmag_au/review/a/acer-preda/acer-predator-triton-700_un4c.1200.png',
                   ),
                   _buildBanner(
                     'Swift Series',
@@ -9118,8 +9131,6 @@ class OrderDetailsPage extends StatelessWidget {
 
   // Get time estimate for each status
   String _getTimestampForStatus(OrderStatus status) {
-    final now = DateTime.now();
-
     switch (status) {
       case OrderStatus.pending:
         return 'On ${_formatDateTime(order.orderDate)}';
