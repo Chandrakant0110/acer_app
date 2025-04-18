@@ -54,7 +54,7 @@ class PrivacyPolicyPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(
-                  'Last Updated: May 1, 2023',
+                  'Last Updated: January 29, 2025',
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
                     fontSize: 14,

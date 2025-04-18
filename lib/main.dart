@@ -789,6 +789,7 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         title: const Text('Search Products'),
         backgroundColor: acerPrimaryColor,
+        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
