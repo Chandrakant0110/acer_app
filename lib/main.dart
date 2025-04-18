@@ -352,8 +352,7 @@ final List<Product> products = [
   ),
   Product(
     name: 'Acer Aspire 7',
-    imageUrl:
-        'https://nutnullpc.com/images/thumbs/0002579_acer-aspire-7-notebook-a715-42g-r5c5-charcoal-black-ryzen-5-5500u-laptop-2-reserve-msu_600.png',
+    imageUrl: 'https://laptopmedia.com/wp-content/uploads/2021/01/1-62.jpg',
     price: 54999,
     description: 'Budget Gaming Laptop with GTX 1650, 8GB RAM, 256GB SSD',
     category: 'Entry Level Gaming',
@@ -2352,43 +2351,53 @@ class _CategoryPageState extends State<CategoryPage> {
         itemCount: _filteredProducts.length,
         itemBuilder: (context, index) {
           final product = _filteredProducts[index];
-          return Card(
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AspectRatio(
-                  aspectRatio: 1.0,
-                  child: Image.network(
-                    product.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductDetailsPage(product: product),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '₹${product.price.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+              );
+            },
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AspectRatio(
+                    aspectRatio: 1.0,
+                    child: Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.name,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '₹${product.price.toStringAsFixed(2)}',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -2822,6 +2831,16 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('Proceeding to checkout...'),
+                              ),
+                            );
+                            // Add a navigation to checkout page with proper cart items and total amount coming from the context
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CheckoutPage(
+                                  cartItems: {widget.product: 1},
+                                  totalAmount: widget.product.price,
+                                ),
                               ),
                             );
                           },
@@ -4119,9 +4138,7 @@ class _LoginPageState extends State<LoginPage>
 
                           const SizedBox(height: 24),
                           ElevatedButton(
-                            onPressed: () {
-                              // Implement the Google sign In feature here..
-                            },
+                            onPressed: () {},
                             child: const Text('Sign In with Google'),
                           ),
                           const SizedBox(height: 24),
