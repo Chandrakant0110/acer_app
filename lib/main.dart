@@ -19,6 +19,7 @@ import 'help_support.dart'; // Import the HelpSupport page
 import 'terms_services.dart'; // Import the TermsServices page
 import 'email_prefernces.dart'; // Import the EmailPreferences page
 import 'address_managment.dart'; // Import the AddressManagement page
+import 'payment_methods.dart'; // Import the PaymentMethods page
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
@@ -1484,10 +1485,11 @@ class _SettingsPageState extends State<SettingsPage>
                               title: 'Payment Methods',
                               subtitle: 'Credit cards, UPI, and more',
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Payment management coming soon'),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PaymentMethods(),
                                   ),
                                 );
                               },
