@@ -18,6 +18,7 @@ import 'about_acer_store.dart';
 import 'help_support.dart'; // Import the HelpSupport page
 import 'terms_services.dart'; // Import the TermsServices page
 import 'email_prefernces.dart'; // Import the EmailPreferences page
+import 'address_managment.dart'; // Import the AddressManagement page
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
@@ -1468,10 +1469,11 @@ class _SettingsPageState extends State<SettingsPage>
                               icon: Icons.location_on_outlined,
                               title: 'Address Management',
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Address management coming soon'),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AddressManagement(),
                                   ),
                                 );
                               },
