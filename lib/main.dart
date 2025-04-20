@@ -14,6 +14,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'error_page.dart';
 import 'pages/my_orders_page.dart'; // Import the new MyOrdersPage
 import 'pages/privacy_policy_page.dart';
+import 'about_acer_store.dart';
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
@@ -1661,9 +1662,11 @@ class _SettingsPageState extends State<SettingsPage>
                               title: 'About Acer Store',
                               subtitle: 'Version 1.9.8',
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('About page coming soon'),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AboutAcerStore(),
                                   ),
                                 );
                               },

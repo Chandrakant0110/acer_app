@@ -11,6 +11,8 @@ class PrivacyPolicyPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Privacy Policy'),
+        backgroundColor: acerPrimaryColor,
+        foregroundColor: Colors.white,
         elevation: 0,
       ),
       body: SafeArea(
@@ -154,8 +156,8 @@ class PrivacyPolicyPage extends StatelessWidget {
               _buildParagraph(
                 'If you have any questions about this Privacy Policy, please contact us:',
               ),
-              _buildBulletPoint('By email: naval47039@infornma.com'),
-              _buildBulletPoint('By phone: +919321025016'),
+              _buildBulletPoint('By email: ail.easycare@acer.com'),
+              _buildBulletPoint('By phone: 1800-11-ACER (2237)'),
               _buildBulletPoint('By mail: 123 Acer Way, Tech City, TC 12345'),
 
               const SizedBox(height: 32),
