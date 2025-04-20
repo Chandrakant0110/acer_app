@@ -89,11 +89,11 @@ class SettingsPage extends StatelessWidget {
               ),
             ],
           ),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Text(
                   'Acer Store India',
                   style: TextStyle(
