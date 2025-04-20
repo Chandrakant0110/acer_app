@@ -59,9 +59,9 @@ class _AboutAcerStoreState extends State<AboutAcerStore> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    'Version: $appVersion',
-                    style: const TextStyle(
+                  const Text(
+                    'Version: 1.9.8',
+                    style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey,
                     ),

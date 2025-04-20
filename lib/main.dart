@@ -15,6 +15,7 @@ import 'error_page.dart';
 import 'pages/my_orders_page.dart'; // Import the new MyOrdersPage
 import 'pages/privacy_policy_page.dart';
 import 'about_acer_store.dart';
+import 'help_support.dart'; // Import the HelpSupport page
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
@@ -1406,10 +1407,10 @@ class _SettingsPageState extends State<SettingsPage>
                   IconButton(
                     icon: const Icon(Icons.help_outline),
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Help & Support coming soon'),
-                          duration: Duration(seconds: 2),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HelpSupport(),
                         ),
                       );
                     },
@@ -1649,9 +1650,10 @@ class _SettingsPageState extends State<SettingsPage>
                               icon: Icons.help_outline,
                               title: 'Help & Support',
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Help Center coming soon'),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const HelpSupport(),
                                   ),
                                 );
                               },

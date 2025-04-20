@@ -1322,9 +1322,9 @@ class _LocationPageState extends State<LocationPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  const Row(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Text(
                           'Store Locator',
                           style: TextStyle(
