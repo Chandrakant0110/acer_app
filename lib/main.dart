@@ -8203,7 +8203,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Shipping'),
-                    Text('FREE', style: TextStyle(color: Colors.green)),
+                    Text('₹ 2000', style: TextStyle(color: Colors.green)),
                   ],
                 ),
                 const SizedBox(height: 8),
