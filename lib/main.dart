@@ -222,7 +222,7 @@ class NotificationsProvider extends ChangeNotifier {
     _notifications.addAll([
       NotificationItem(
         id: '1',
-        title: 'Exclusive Offer: 15% Off Acer Monitors',
+        title: 'Exclusive Offer: 10% Off Acer Monitors',
         body:
             'Limited time offer on all Acer monitors. Use code ACER15 at checkout.',
         timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
@@ -355,21 +355,24 @@ final List<Product> products = [
     name: 'Acer Nitro 5',
     imageUrl: 'https://metrokomputer.id/wp-content/uploads/2023/10/1-3.png',
     price: 69999,
-    description: 'Entry Level Gaming Laptop with RTX 3050, 16GB RAM, 512GB SSD',
+    description:
+        'The Intel Core i5 processors in the Nitro 5 (e.g., i5-10300H, i5-11400H, or i5-12500H) are mid-range, multi-core CPUs with 4-12 cores and boost clocks up to 4.5 GHz. Paired with the RTX 3050, they provide efficient multitasking and gaming performance, achieving 60-80 fps in modern titles at 1080p medium-high settings.',
     category: 'Entry Level Gaming',
   ),
   Product(
     name: 'Acer Aspire 7',
     imageUrl: 'https://laptopmedia.com/wp-content/uploads/2021/01/1-62.jpg',
     price: 54999,
-    description: 'Budget Gaming Laptop with GTX 1650, 8GB RAM, 256GB SSD',
+    description:
+        'The Acer Aspire 7 is a performance-oriented laptop designed for both professionals and casual gamers. It strikes a balance between power, portability, and affordability, making it an ideal choice for students, content creators, coders, and business users.',
     category: 'Entry Level Gaming',
   ),
   Product(
     name: 'Acer Nitro V',
     imageUrl: 'https://metrokomputer.id/wp-content/uploads/2023/10/1-3.png',
     price: 62999,
-    description: 'Entry Level Gaming Laptop with RTX 2050, 12GB RAM, 512GB SSD',
+    description:
+        'The Acer Nitro V series equipped with the NVIDIA GeForce RTX 2050 GPU is engineered to deliver a balanced performance for gamers, content creators, and professionals seeking a reliable and efficient laptop.',
     category: 'Entry Level Gaming',
   ),
 
@@ -379,7 +382,8 @@ final List<Product> products = [
     imageUrl:
         'https://storage.googleapis.com/stateless-gstylemag-com/2023/12/c3ca0eaa-acer-nitro-v-16-anv16-41_front-facing-1160x919.png',
     price: 79999,
-    description: 'Mid-Range Gaming Laptop with RTX 3060, 16GB RAM, 512GB SSD',
+    description:
+        'The Acer Nitro 5 RTX 3060 (AMD) is a mid-range gaming laptop with an NVIDIA RTX 3060 (6GB GDDR6), AMD Ryzen 5 5600H or Ryzen 7 5800H, and a 15.6-inch 144Hz Full HD IPS display. It has 8GB/16GB DDR4, 512GB SSD, Wi-Fi 6, and dual-fan cooling.',
     category: 'Mid-Range Gaming',
   ),
   Product(
@@ -387,7 +391,8 @@ final List<Product> products = [
     imageUrl:
         'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_95212261/fee_786_587_png',
     price: 89999,
-    description: 'High-end Gaming Laptop with RTX 3060, 16GB RAM, 1TB SSD',
+    description:
+        'Acer Predator Helios 300 RTX 3060 (AMD) is a mid-range gaming laptop with an RTX 3060 (6GB), AMD Ryzen 5 5600H or Ryzen 7 5800H, and 15.6-inch 144Hz/240Hz Full HD IPS display. It has 16GB DDR4, 512GB SSD, Wi-Fi 6, and AeroBlade cooling.',
     category: 'Mid-Range Gaming',
   ),
   Product(
@@ -395,7 +400,7 @@ final List<Product> products = [
     imageUrl:
         'https://static.wixstatic.com/media/131a7a_c475ba2376b74907991f40650d516b59~mv2.png/v1/fill/w_963,h_789,al_c,q_90,enc_auto/131a7a_c475ba2376b74907991f40650d516b59~mv2.png',
     price: 94999,
-    description: 'Mid-Range Gaming Laptop with RTX 3070, 16GB RAM, 1TB SSD',
+    description: 'The Acer Predator Helios Neo 16 (2024) with Intel and RTX 4080 is a high-performance gaming laptop featuring a 14th Gen Intel Core i9-14900HX, NVIDIA RTX 4080 (12GB GDDR6), and a 16-inch WQXGA (2560x1600) IPS display with 240Hz refresh. It includes 32GB DDR5, 1TB SSD, Wi-Fi 7, and dual AeroBlade 3D fan cooling.',
     category: 'Mid-Range Gaming',
   ),
 
@@ -405,7 +410,7 @@ final List<Product> products = [
     imageUrl:
         'https://images.frandroid.com/wp-content/uploads/2022/01/acer-predator-triton-500-se-2022-frandroid-2022.png',
     price: 149999,
-    description: 'Premium Gaming Laptop with RTX 3070 Ti, 32GB RAM, 1TB SSD',
+    description: 'The Acer Predator Helios 500 SE (PH517-52) is a high-end gaming laptop with an Intel Core i9-11980HK, NVIDIA RTX 3080 (165W, 16GB), and 17.3-inch 4K Mini LED display. It features 32GB DDR4, 2TB SSD (RAID0), Wi-Fi 6, and advanced cooling with PowerGem.',
     category: 'High-End Gaming',
   ),
   Product(
@@ -413,7 +418,7 @@ final List<Product> products = [
     imageUrl:
         'https://delta-game.ru/wp-content/uploads/2018/08/Acer-Predator-Helios-500-PH517-51-74ZA.png',
     price: 199999,
-    description: 'Ultimate Gaming Laptop with RTX 3080, 32GB RAM, 2TB SSD',
+    description: 'The Acer Predator Helios 500 (PH517-52, 2021) is a high-end gaming laptop with an Intel Core i9-11980HK, NVIDIA RTX 3080 (16GB GDDR6), and 17.3-inch 4K Mini LED 120Hz display. It features 32GB DDR4, dual 1TB PCIe 4 SSDs in RAID0, Wi-Fi 6, and AeroBlade 3D cooling with PowerGem.',
     category: 'High-End Gaming',
   ),
   Product(
@@ -421,7 +426,7 @@ final List<Product> products = [
     imageUrl:
         'https://www.pngkit.com/png/full/340-3400698_predator-triton-700-gaming-laptop-acer-predator-triton.png',
     price: 219999,
-    description: 'Elite Gaming Laptop with RTX 3080 Ti, 64GB RAM, 2TB SSD',
+    description: 'The Acer Predator Triton 700 RTX 3080 series is a high-performance gaming laptop with an NVIDIA RTX 3080 (8GB GDDR6), Intel Core i7-11800H, and a 15.6-inch Full HD 120Hz IPS display. It features 16GB DDR4, 1TB SSD, Wi-Fi 6, and AeroBlade 3D cooling.',
     category: 'High-End Gaming',
   ),
 
@@ -431,7 +436,7 @@ final List<Product> products = [
     imageUrl:
         'https://www.pngkey.com/png/full/933-9332504_swift-3-sf313-51-01-acer-swift-3.png',
     price: 54999,
-    description: 'Ultra-thin Laptop with Intel i5, 8GB RAM, 256GB SSD',
+    description: 'The 2024 Acer Swift 3 (Swift Go 14, SFG14-73) is an ultrathin AI PC with AMD Ryzen AI 8040 Series processors (e.g., Ryzen 7 8845HS, 8-core, up to 5.1 GHz) and a 14-inch 2.8K OLED display (90Hz, 100% DCI-P3). It features 16GB LPDDR5X, 1TB SSD, Wi-Fi 7, and a 65Wh battery (~12 hours).',
     category: 'Business & Productivity',
   ),
   Product(
