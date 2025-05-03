@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'add_new_address_page.dart';
 import 'main.dart'; // Import main.dart to access OrdersPage and other providers
 import 'pages/my_orders_page.dart'; // Import the new MyOrdersPage
+import 'checkout_page.dart' as new_checkout; // Import our new beautiful checkout page with prefix
 
 class CartPage extends StatelessWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -313,7 +314,7 @@ class CartPage extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CheckoutPage(
+                        builder: (context) => new_checkout.CheckoutPage(
                           cartItems: cartItems,
                           totalAmount: totalAmount,
                         ),

@@ -20,6 +20,8 @@ import 'terms_services.dart'; // Import the TermsServices page
 import 'email_prefernces.dart'; // Import the EmailPreferences page
 import 'address_managment.dart'; // Import the AddressManagement page
 import 'payment_methods.dart'; // Import the PaymentMethods page
+import 'checkout_page.dart'
+    as new_checkout; // Import the new beautiful checkout page
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
 // Import the new MyOrdersPage
@@ -1216,7 +1218,7 @@ class CartPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CheckoutPage(
+                              builder: (context) => new_checkout.CheckoutPage(
                                 cartItems: cart.items,
                                 totalAmount: cart.totalAmount,
                               ),
@@ -2841,16 +2843,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                             ),
                           ),
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Proceeding to checkout...'),
-                              ),
-                            );
                             // Add a navigation to checkout page with proper cart items and total amount coming from the context
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CheckoutPage(
+                                builder: (context) => new_checkout.CheckoutPage(
                                   cartItems: {widget.product: 1},
                                   totalAmount: widget.product.price,
                                 ),
@@ -2930,6 +2927,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+        
           // Enhanced description section with Amazon-like formatting
           const Text(
             'About This Item',
