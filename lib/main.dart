@@ -3845,7 +3845,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
           Text(
             description,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 0,
               color: Colors.grey[700],
             ),
             textAlign: TextAlign.center,
