@@ -400,7 +400,8 @@ final List<Product> products = [
     imageUrl:
         'https://static.wixstatic.com/media/131a7a_c475ba2376b74907991f40650d516b59~mv2.png/v1/fill/w_963,h_789,al_c,q_90,enc_auto/131a7a_c475ba2376b74907991f40650d516b59~mv2.png',
     price: 94999,
-    description: 'The Acer Predator Helios Neo 16 (2024) with Intel and RTX 4080 is a high-performance gaming laptop featuring a 14th Gen Intel Core i9-14900HX, NVIDIA RTX 4080 (12GB GDDR6), and a 16-inch WQXGA (2560x1600) IPS display with 240Hz refresh. It includes 32GB DDR5, 1TB SSD, Wi-Fi 7, and dual AeroBlade 3D fan cooling.',
+    description:
+        'The Acer Predator Helios Neo 16 (2024) with Intel and RTX 4080 is a high-performance gaming laptop featuring a 14th Gen Intel Core i9-14900HX, NVIDIA RTX 4080 (12GB GDDR6), and a 16-inch WQXGA (2560x1600) IPS display with 240Hz refresh. It includes 32GB DDR5, 1TB SSD, Wi-Fi 7, and dual AeroBlade 3D fan cooling.',
     category: 'Mid-Range Gaming',
   ),
 
@@ -410,7 +411,8 @@ final List<Product> products = [
     imageUrl:
         'https://images.frandroid.com/wp-content/uploads/2022/01/acer-predator-triton-500-se-2022-frandroid-2022.png',
     price: 149999,
-    description: 'The Acer Predator Helios 500 SE (PH517-52) is a high-end gaming laptop with an Intel Core i9-11980HK, NVIDIA RTX 3080 (165W, 16GB), and 17.3-inch 4K Mini LED display. It features 32GB DDR4, 2TB SSD (RAID0), Wi-Fi 6, and advanced cooling with PowerGem.',
+    description:
+        'The Acer Predator Helios 500 SE (PH517-52) is a high-end gaming laptop with an Intel Core i9-11980HK, NVIDIA RTX 3080 (165W, 16GB), and 17.3-inch 4K Mini LED display. It features 32GB DDR4, 2TB SSD (RAID0), Wi-Fi 6, and advanced cooling with PowerGem.',
     category: 'High-End Gaming',
   ),
   Product(
@@ -418,7 +420,8 @@ final List<Product> products = [
     imageUrl:
         'https://delta-game.ru/wp-content/uploads/2018/08/Acer-Predator-Helios-500-PH517-51-74ZA.png',
     price: 199999,
-    description: 'The Acer Predator Helios 500 (PH517-52, 2021) is a high-end gaming laptop with an Intel Core i9-11980HK, NVIDIA RTX 3080 (16GB GDDR6), and 17.3-inch 4K Mini LED 120Hz display. It features 32GB DDR4, dual 1TB PCIe 4 SSDs in RAID0, Wi-Fi 6, and AeroBlade 3D cooling with PowerGem.',
+    description:
+        'The Acer Predator Helios 500 (PH517-52, 2021) is a high-end gaming laptop with an Intel Core i9-11980HK, NVIDIA RTX 3080 (16GB GDDR6), and 17.3-inch 4K Mini LED 120Hz display. It features 32GB DDR4, dual 1TB PCIe 4 SSDs in RAID0, Wi-Fi 6, and AeroBlade 3D cooling with PowerGem.',
     category: 'High-End Gaming',
   ),
   Product(
@@ -426,7 +429,8 @@ final List<Product> products = [
     imageUrl:
         'https://www.pngkit.com/png/full/340-3400698_predator-triton-700-gaming-laptop-acer-predator-triton.png',
     price: 219999,
-    description: 'The Acer Predator Triton 700 RTX 3080 series is a high-performance gaming laptop with an NVIDIA RTX 3080 (8GB GDDR6), Intel Core i7-11800H, and a 15.6-inch Full HD 120Hz IPS display. It features 16GB DDR4, 1TB SSD, Wi-Fi 6, and AeroBlade 3D cooling.',
+    description:
+        'The Acer Predator Triton 700 RTX 3080 series is a high-performance gaming laptop with an NVIDIA RTX 3080 (8GB GDDR6), Intel Core i7-11800H, and a 15.6-inch Full HD 120Hz IPS display. It features 16GB DDR4, 1TB SSD, Wi-Fi 6, and AeroBlade 3D cooling.',
     category: 'High-End Gaming',
   ),
 
@@ -436,7 +440,8 @@ final List<Product> products = [
     imageUrl:
         'https://www.pngkey.com/png/full/933-9332504_swift-3-sf313-51-01-acer-swift-3.png',
     price: 54999,
-    description: 'The 2024 Acer Swift 3 (Swift Go 14, SFG14-73) is an ultrathin AI PC with AMD Ryzen AI 8040 Series processors (e.g., Ryzen 7 8845HS, 8-core, up to 5.1 GHz) and a 14-inch 2.8K OLED display (90Hz, 100% DCI-P3). It features 16GB LPDDR5X, 1TB SSD, Wi-Fi 7, and a 65Wh battery (~12 hours).',
+    description:
+        'The 2024 Acer Swift 3 (Swift Go 14, SFG14-73) is an ultrathin AI PC with AMD Ryzen AI 8040 Series processors (e.g., Ryzen 7 8845HS, 8-core, up to 5.1 GHz) and a 14-inch 2.8K OLED display (90Hz, 100% DCI-P3). It features 16GB LPDDR5X, 1TB SSD, Wi-Fi 7, and a 65Wh battery (~12 hours).',
     category: 'Business & Productivity',
   ),
   Product(
@@ -444,7 +449,8 @@ final List<Product> products = [
     imageUrl:
         'https://www.systembaba.com/uploaded_files/acer-spin-5-2022-3513f.png',
     price: 64999,
-    description: '2-in-1 Convertible Laptop with Intel i7, 16GB RAM, 512GB SSD',
+    description:
+        'Acer Spin 5 (2022, SP514-51N): A 2-in-1 convertible laptop with a 14-inch WQXGA (2560x1600) 16:10 touchscreen, 12th Gen Intel Core i7-1260P, 16GB LPDDR5, 512GB SSD, and Wi-Fi 6.',
     category: 'Business & Productivity',
   ),
   Product(
@@ -453,7 +459,7 @@ final List<Product> products = [
         'https://www.creativeit.tv/wp-content/uploads/2020/03/TravelMate.png',
     price: 74999,
     description:
-        'Professional Business Laptop with Intel i7, 16GB RAM, 1TB SSD',
+        'Acer TravelMate P6 14 AI: A premium business laptop with Intel Core Ultra processors, 14-inch WQXGA (2560x1600) OLED display, 16GB/32GB LPDDR5X RAM, and 512GB/1TB SSD.',
     category: 'Business & Productivity',
   ),
 
@@ -463,7 +469,8 @@ final List<Product> products = [
     imageUrl:
         'https://pisces.bbystatic.com/image2/BestBuy_US/images/products/6577/6577093_sd.png',
     price: 49999,
-    description: '27" 4K Gaming Monitor, 144Hz, G-Sync Compatible',
+    description:
+        'A 27-inch 4K UHD (3840x2160) IPS gaming monitor with a 160Hz refresh rate, 0.5ms response time, AMD FreeSync Premium, VESA DisplayHDR 400, and 95% DCI-P3. Features 2x HDMI 2.1, DisplayPort 1.4, and ergonomic stand.',
     category: 'Monitors',
   ),
   Product(
@@ -471,7 +478,8 @@ final List<Product> products = [
     imageUrl:
         'https://www.notebookcheck.com/fileadmin/Notebooks/News/_nc3/Nitro_XV272U_KF_1.png',
     price: 24999,
-    description: '27" WQHD IPS Gaming Monitor, 170Hz, 1ms Response Time',
+    description:
+        'The latest Acer Nitro XV272U series continues to deliver impressive gaming performance at a competitive price point, focusing on 27-inch, 1440p (QHD) resolution. These monitors primarily utilize IPS panels, offering vibrant colors and wide viewing angles.',
     category: 'Monitors',
   ),
   Product(
@@ -479,7 +487,8 @@ final List<Product> products = [
     imageUrl:
         'https://th.bing.com/th/id/OIP.3SycXmBrNb_asw6zbmfFhAHaHa?rs=1&pid=ImgDetMain',
     price: 59999,
-    description: '32" 4K UHD Professional Monitor, 100% Adobe RGB, USB-C',
+    description:
+        'Models like the PE320QK and newer iterations boast 32-inch 4K UHD IPS panels, covering 99% of Adobe RGB and 99% of DCI-P3 color gamuts, often with Delta E < 2 calibration out of the box.',
     category: 'Monitors',
   ),
   Product(
@@ -487,7 +496,8 @@ final List<Product> products = [
     imageUrl:
         'https://assets.mmsrg.com/isr/166325/c1/-/ASSET_MMS_91106875/fee_786_587_png',
     price: 19999,
-    description: '34" UltraWide QHD Monitor, 75Hz, HDR10, FreeSync',
+    description:
+        'Featuring a vibrant 34-inch ultrawide curved display, these models aim to simplify computing for home and office use. They typically boast Intel processors, integrated graphics, and a focus on seamless integration with Google Workspace and the wider Chrome ecosystem.',
     category: 'Monitors',
   ),
 
@@ -497,7 +507,8 @@ final List<Product> products = [
     imageUrl:
         'https://static.acer.com/up/Resource/Acer/Accessories/Predator/Predator-Cestus-350/images/20200302/Predator-Cestus_350_sku-main.png',
     price: 4999,
-    description: 'Wireless Gaming Mouse, 16000 DPI, RGB Lighting',
+    description:
+        'the latest iteration features a refined ergonomic shape and continues to offer swappable side grips to tailor the fit to various hand sizes and grip styles. It boasts a high-precision optical sensor with up to 12,000 DPI, ensuring accurate tracking, and utilizes Omron switches for responsive and durable clicks.',
     category: 'Accessories',
   ),
   Product(
@@ -505,7 +516,7 @@ final List<Product> products = [
     imageUrl:
         'https://sm.ign.com/t/ign_pk/cover/a/acer-preda/acer-predator-aethon-500_gcud.300.png',
     price: 7999,
-    description: 'Mechanical Gaming Keyboard with Blue Switches, RGB Lighting',
+    description: 'The Acer Predator Aethon CG500 series keyboards are built for immersive gaming experiences, focusing on customization and performance. Available in full-size and TKL (tenkeyless) layouts, they feature Predator’s custom-engineered mechanical switches.',
     category: 'Accessories',
   ),
   Product(
@@ -513,7 +524,7 @@ final List<Product> products = [
     imageUrl:
         'https://th.bing.com/th/id/R.24a12b0030bbbe89ccd1cf49eb5ef00d?rik=Dfxj16XlL0ZQnQ&riu=http%3a%2f%2fwww.acerstore.cl%2fcdn%2fshop%2ffiles%2fheadset_1a-1.png%3fv%3d1724192851&ehk=oxdlPI%2fzhd%2fPyFkqj8Xw903xxcoNoiECFVozSMv1L70%3d&risl=&pid=ImgRaw&r=0',
     price: 3999,
-    description: '7.1 Surround Sound Gaming Headset with Retractable Mic',
+    description: 'Featuring a sleek, minimalist design, these headsets boast larger 40mm drivers delivering immersive sound with enhanced bass for a competitive edge.  They prioritize long-lasting comfort with plush memory foam earcups and adjustable headbands, making them suitable for extended gaming sessions.',
     category: 'Accessories',
   ),
   Product(
@@ -522,7 +533,7 @@ final List<Product> products = [
         'https://static.acer.com/up/Resource/Acer/Accessories/Predator/Predator_Gaming_Chair/Images/20180713/Predator-gaming-chair-PGC810-preview.png',
     price: 19999,
     description:
-        'Ergonomic Gaming Chair with Lumbar Support, Adjustable Armrests',
+        'The latest Acer Predator gaming chairs represent a significant leap in both comfort and integrated technology. Moving beyond purely aesthetic aggression, these chairs prioritize long-duration gameplay with a focus on ergonomic support.',
     category: 'Accessories',
   ),
 ];
@@ -546,7 +557,7 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 199999.99,
-    description: 'Intel Core i9-14900HX, NVIDIA RTX 4090, 32GB RAM, 2TB SSD',
+    description: "The 2024 Predator Helios 16 represents Acer's continued push into premium gaming laptops. This generation boasts Intel's latest 14th Gen HX Series processors paired with up to NVIDIA GeForce RTX 4090 graphics, delivering exceptional performance for demanding games and creative applications. A standout feature is the 16-inch WQXGA mini-LED display with a blazing 240Hz refresh rate",
     category: 'High-End Gaming',
   ),
   Product(
@@ -566,7 +577,7 @@ final List<Product> sampleProducts = [
     category: 'Mid-Range Gaming',
   ),
   Product(
-    name: 'Nitro 7',
+    name: 'Acer Travelmate 7',
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 109999.99,
