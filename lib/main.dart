@@ -2354,6 +2354,8 @@ class _CategoryPageState extends State<CategoryPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        backgroundColor: acerPrimaryColor,
+        foregroundColor: Colors.white,
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(16),
