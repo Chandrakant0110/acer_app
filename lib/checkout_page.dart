@@ -4,24 +4,7 @@ import 'dart:ui';
 
 // Import your existing models and providers
 import 'main.dart';
-
-// Placeholder for pages that might not exist yet - remove once implemented
-class MyOrdersPage extends StatelessWidget {
-  const MyOrdersPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Orders'),
-        backgroundColor: acerPrimaryColor,
-      ),
-      body: const Center(
-        child: Text('My Orders Page - Coming Soon'),
-      ),
-    );
-  }
-}
+import 'pages/my_orders_page.dart';
 
 // Placeholder for HomePage if needed
 class HomePage extends StatelessWidget {
@@ -1565,7 +1548,7 @@ class _CheckoutPageState extends State<CheckoutPage>
     final subtotal = widget.totalAmount;
 
     // Calculate shipping (free over 10000)
-    final shipping = subtotal > 10000 ? 0.0 : 499.0;
+    final shipping = subtotal > 10000 ? 150 : 499.0;
 
     // Calculate tax (18% GST)
     final tax = subtotal * 0.18;
