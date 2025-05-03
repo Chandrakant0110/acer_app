@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
 
@@ -122,11 +121,37 @@ class _CheckoutPageState extends State<CheckoutPage>
     ),
   ];
 
+  // Add these new fields for validation and selection
+  final _cardFormKey = GlobalKey<FormState>();
+  final _upiFormKey = GlobalKey<FormState>();
+
+  // Controllers for payment inputs
+  late TextEditingController cardNumberController;
+  late TextEditingController cardNameController;
+  late TextEditingController cardExpiryController;
+  late TextEditingController cardCvvController;
+  late TextEditingController upiIdController;
+
+  // Selected bank and UPI app
+  String? _selectedBank;
+  String? _selectedUpiApp;
+
+  // Error messages
+  String? _paymentErrorMessage;
+  bool _showErrors = false;
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
     _tabController = TabController(length: 3, vsync: this);
+
+    // Initialize controllers
+    cardNumberController = TextEditingController();
+    cardNameController = TextEditingController();
+    cardExpiryController = TextEditingController();
+    cardCvvController = TextEditingController();
+    upiIdController = TextEditingController();
 
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
@@ -152,6 +177,14 @@ class _CheckoutPageState extends State<CheckoutPage>
   void dispose() {
     _pageController.dispose();
     _tabController.dispose();
+
+    // Dispose controllers
+    cardNumberController.dispose();
+    cardNameController.dispose();
+    cardExpiryController.dispose();
+    cardCvvController.dispose();
+    upiIdController.dispose();
+
     super.dispose();
   }
 
@@ -703,15 +736,6 @@ class _CheckoutPageState extends State<CheckoutPage>
 
   // Payment selection page
   Widget _buildPaymentPage() {
-    // Adding controllers for payment inputs
-    final TextEditingController cardNumberController = TextEditingController();
-    final TextEditingController cardNameController = TextEditingController();
-    final TextEditingController cardExpiryController = TextEditingController();
-    final TextEditingController cardCvvController = TextEditingController();
-    final TextEditingController upiIdController = TextEditingController();
-    final TextEditingController netBankingIdController =
-        TextEditingController();
-
     return Container(
       color: Colors.grey[50],
       child: Stack(
@@ -730,6 +754,33 @@ class _CheckoutPageState extends State<CheckoutPage>
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                // Error message if validation fails
+                if (_showErrors && _paymentErrorMessage != null)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.red[50],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red[300]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.error_outline,
+                            color: Colors.red[700], size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _paymentErrorMessage!,
+                            style: TextStyle(color: Colors.red[700]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 Expanded(
                   child: ListView(
                     children: [
@@ -772,6 +823,8 @@ class _CheckoutPageState extends State<CheckoutPage>
                                   onTap: () {
                                     setState(() {
                                       _selectedPaymentMethod = method['name'];
+                                      _showErrors = false;
+                                      _paymentErrorMessage = null;
                                     });
                                   },
                                   borderRadius: BorderRadius.circular(16),
@@ -958,11 +1011,19 @@ class _CheckoutPageState extends State<CheckoutPage>
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        _pageController.animateToPage(
-                          2,
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
+                        // Validate payment details based on selected method
+                        if (_validatePaymentDetails()) {
+                          _pageController.animateToPage(
+                            2,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        } else {
+                          // Show error if validation fails
+                          setState(() {
+                            _showErrors = true;
+                          });
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: acerPrimaryColor,
@@ -992,6 +1053,84 @@ class _CheckoutPageState extends State<CheckoutPage>
     );
   }
 
+  // Validate payment details based on selected method
+  bool _validatePaymentDetails() {
+    switch (_getPaymentMethodId(_selectedPaymentMethod)) {
+      case 'card':
+        if (cardNumberController.text.isEmpty) {
+          _paymentErrorMessage = 'Please enter your card number';
+          return false;
+        }
+        if (cardNameController.text.isEmpty) {
+          _paymentErrorMessage = 'Please enter the name on your card';
+          return false;
+        }
+        if (cardExpiryController.text.isEmpty) {
+          _paymentErrorMessage = 'Please enter card expiry date';
+          return false;
+        }
+        if (cardCvvController.text.isEmpty) {
+          _paymentErrorMessage = 'Please enter CVV';
+          return false;
+        }
+        if (cardNumberController.text.replaceAll(' ', '').length < 16) {
+          _paymentErrorMessage = 'Please enter a valid 16-digit card number';
+          return false;
+        }
+        if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(cardExpiryController.text)) {
+          _paymentErrorMessage = 'Please enter expiry date in MM/YY format';
+          return false;
+        }
+        if (cardCvvController.text.length < 3) {
+          _paymentErrorMessage = 'CVV must be 3 digits';
+          return false;
+        }
+        return true;
+
+      case 'upi':
+        if (upiIdController.text.isEmpty) {
+          _paymentErrorMessage = 'Please enter your UPI ID';
+          return false;
+        }
+        if (_selectedUpiApp == null) {
+          _paymentErrorMessage = 'Please select a UPI app';
+          return false;
+        }
+        if (!RegExp(r'^[a-zA-Z0-9_.-]+@[a-zA-Z0-9.-]+$')
+            .hasMatch(upiIdController.text)) {
+          _paymentErrorMessage =
+              'Please enter a valid UPI ID (e.g. yourname@upi)';
+          return false;
+        }
+        return true;
+
+      case 'netbanking':
+        if (_selectedBank == null) {
+          _paymentErrorMessage = 'Please select your bank';
+          return false;
+        }
+        return true;
+
+      case 'cod':
+        // No validation needed for COD
+        return true;
+
+      default:
+        _paymentErrorMessage = 'Please select a payment method';
+        return false;
+    }
+  }
+
+  // Get the payment method ID from its name
+  String _getPaymentMethodId(String methodName) {
+    for (var method in _paymentMethods) {
+      if (method['name'] == methodName) {
+        return method['id'] as String;
+      }
+    }
+    return '';
+  }
+
   // Build payment detail fields based on the selected payment method
   Widget _buildPaymentDetails(String methodId) {
     switch (methodId) {
@@ -1005,87 +1144,108 @@ class _CheckoutPageState extends State<CheckoutPage>
               bottomRight: Radius.circular(16),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              const Text(
-                'Card Details',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Card number field
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Card Number',
-                  hintText: 'XXXX XXXX XXXX XXXX',
-                  prefixIcon: const Icon(Icons.credit_card),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+          child: Form(
+            key: _cardFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                const Text(
+                  'Card Details',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
                 ),
-                keyboardType: TextInputType.number,
-                maxLength: 19, // 16 digits + 3 spaces
-              ),
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Name on card field
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'Name on Card',
-                  hintText: 'e.g. JOHN SMITH',
-                  prefixIcon: const Icon(Icons.person),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                textCapitalization: TextCapitalization.characters,
-              ),
-              const SizedBox(height: 16),
-
-              // Expiry and CVV in a row
-              Row(
-                children: [
-                  // Expiry date
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Expiry (MM/YY)',
-                        hintText: 'MM/YY',
-                        prefixIcon: const Icon(Icons.date_range),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      maxLength: 5, // MM/YY format
+                // Card number field
+                TextField(
+                  controller: cardNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Card Number',
+                    hintText: 'XXXX XXXX XXXX XXXX',
+                    errorText: _showErrors && cardNumberController.text.isEmpty
+                        ? 'Required'
+                        : null,
+                    prefixIcon: const Icon(Icons.credit_card),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  keyboardType: TextInputType.number,
+                  maxLength: 19, // 16 digits + 3 spaces
+                ),
+                const SizedBox(height: 16),
 
-                  // CVV
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'CVV',
-                        hintText: 'XXX',
-                        prefixIcon: const Icon(Icons.security),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                      maxLength: 3,
-                      obscureText: true,
+                // Name on card field
+                TextField(
+                  controller: cardNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Name on Card',
+                    hintText: 'e.g. JOHN SMITH',
+                    errorText: _showErrors && cardNameController.text.isEmpty
+                        ? 'Required'
+                        : null,
+                    prefixIcon: const Icon(Icons.person),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                ],
-              ),
-            ],
+                  textCapitalization: TextCapitalization.characters,
+                ),
+                const SizedBox(height: 16),
+
+                // Expiry and CVV in a row
+                Row(
+                  children: [
+                    // Expiry date
+                    Expanded(
+                      child: TextField(
+                        controller: cardExpiryController,
+                        decoration: InputDecoration(
+                          labelText: 'Expiry (MM/YY)',
+                          hintText: 'MM/YY',
+                          errorText:
+                              _showErrors && cardExpiryController.text.isEmpty
+                                  ? 'Required'
+                                  : null,
+                          prefixIcon: const Icon(Icons.date_range),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        maxLength: 5, // MM/YY format
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+
+                    // CVV
+                    Expanded(
+                      child: TextField(
+                        controller: cardCvvController,
+                        decoration: InputDecoration(
+                          labelText: 'CVV',
+                          hintText: 'XXX',
+                          errorText:
+                              _showErrors && cardCvvController.text.isEmpty
+                                  ? 'Required'
+                                  : null,
+                          prefixIcon: const Icon(Icons.security),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        maxLength: 3,
+                        obscureText: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
 
@@ -1099,46 +1259,75 @@ class _CheckoutPageState extends State<CheckoutPage>
               bottomRight: Radius.circular(16),
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              const Text(
-                'UPI Details',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // UPI ID field
-              TextField(
-                decoration: InputDecoration(
-                  labelText: 'UPI ID',
-                  hintText: 'yourname@upi',
-                  prefixIcon: const Icon(Icons.account_balance_wallet),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+          child: Form(
+            key: _upiFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                const Text(
+                  'UPI Details',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
                 ),
-                keyboardType: TextInputType.emailAddress,
-              ),
+                const SizedBox(height: 16),
 
-              const SizedBox(height: 16),
+                // UPI ID field
+                TextField(
+                  controller: upiIdController,
+                  decoration: InputDecoration(
+                    labelText: 'UPI ID',
+                    hintText: 'yourname@upi',
+                    errorText: _showErrors && upiIdController.text.isEmpty
+                        ? 'Required'
+                        : null,
+                    prefixIcon: const Icon(Icons.account_balance_wallet),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                ),
 
-              // UPI apps suggestion
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  _buildUpiOption('Google Pay', 'assets/logos/gpay.png'),
-                  _buildUpiOption('PhonePe', 'assets/logos/phonepe.png'),
-                  _buildUpiOption('Paytm', 'assets/logos/paytm.png'),
-                  _buildUpiOption('BHIM', 'assets/logos/bhim.png'),
-                ],
-              ),
-            ],
+                const SizedBox(height: 16),
+
+                Text(
+                  'Select UPI App',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[800],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // UPI apps selection
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _buildUpiOption('Google Pay', 'assets/logos/gpay.png'),
+                    _buildUpiOption('PhonePe', 'assets/logos/phonepe.png'),
+                    _buildUpiOption('Paytm', 'assets/logos/paytm.png'),
+                    _buildUpiOption('BHIM', 'assets/logos/bhim.png'),
+                  ],
+                ),
+
+                if (_showErrors && _selectedUpiApp == null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Please select a UPI app',
+                      style: TextStyle(
+                        color: Colors.red[700],
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
 
@@ -1170,13 +1359,18 @@ class _CheckoutPageState extends State<CheckoutPage>
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[400]!),
+                  border: Border.all(
+                    color: _showErrors && _selectedBank == null
+                        ? Colors.red
+                        : Colors.grey[400]!,
+                  ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     isExpanded: true,
                     hint: const Text('Select your bank'),
+                    value: _selectedBank,
                     items: [
                       'State Bank of India',
                       'HDFC Bank',
@@ -1192,11 +1386,25 @@ class _CheckoutPageState extends State<CheckoutPage>
                       );
                     }).toList(),
                     onChanged: (value) {
-                      // Handle bank selection
+                      setState(() {
+                        _selectedBank = value;
+                      });
                     },
                   ),
                 ),
               ),
+
+              if (_showErrors && _selectedBank == null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 12),
+                  child: Text(
+                    'Please select your bank',
+                    style: TextStyle(
+                      color: Colors.red[700],
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
 
               const SizedBox(height: 20),
               const Text(
@@ -1249,15 +1457,23 @@ class _CheckoutPageState extends State<CheckoutPage>
 
   // Helper method to build UPI payment option
   Widget _buildUpiOption(String name, String imagePath) {
+    final isSelected = _selectedUpiApp == name;
+
     return InkWell(
       onTap: () {
-        // Handle UPI app selection
+        setState(() {
+          _selectedUpiApp = name;
+        });
       },
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[300]!),
+          color: isSelected ? acerPrimaryColor.withOpacity(0.1) : Colors.white,
+          border: Border.all(
+            color: isSelected ? acerPrimaryColor : Colors.grey[300]!,
+            width: isSelected ? 2 : 1,
+          ),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -1268,13 +1484,34 @@ class _CheckoutPageState extends State<CheckoutPage>
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: isSelected
+                    ? acerPrimaryColor.withOpacity(0.2)
+                    : Colors.grey[300],
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.payment, size: 14),
+              child: Icon(
+                Icons.payment,
+                size: 14,
+                color: isSelected ? acerPrimaryColor : Colors.grey[700],
+              ),
             ),
             const SizedBox(width: 8),
-            Text(name),
+            Text(
+              name,
+              style: TextStyle(
+                color: isSelected ? acerPrimaryColor : Colors.black87,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            if (isSelected)
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Icon(
+                  Icons.check_circle,
+                  size: 16,
+                  color: acerPrimaryColor,
+                ),
+              ),
           ],
         ),
       ),
@@ -2498,7 +2735,7 @@ class CheckoutPatternPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 2;
 
-    final dotSpacing = 20.0;
+    const dotSpacing = 20.0;
 
     for (double x = 0; x < size.width; x += dotSpacing) {
       for (double y = 0; y < size.height; y += dotSpacing) {

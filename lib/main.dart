@@ -1180,7 +1180,7 @@ class CartPage extends StatelessWidget {
                           ),
                         ),
                         const Text(
-                          'FREE',
+                          '₹150',
                           style: TextStyle(
                             color: Colors.green,
                             fontWeight: FontWeight.bold,
@@ -2927,7 +2927,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        
           // Enhanced description section with Amazon-like formatting
           const Text(
             'About This Item',
