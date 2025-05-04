@@ -508,7 +508,7 @@ final List<Product> products = [
         'https://static.acer.com/up/Resource/Acer/Accessories/Predator/Predator-Cestus-350/images/20200302/Predator-Cestus_350_sku-main.png',
     price: 4999,
     description:
-        'the latest iteration features a refined ergonomic shape and continues to offer swappable side grips to tailor the fit to various hand sizes and grip styles. It boasts a high-precision optical sensor with up to 12,000 DPI, ensuring accurate tracking, and utilizes Omron switches for responsive and durable clicks.',
+        'The latest iteration features a refined ergonomic shape and continues to offer swappable side grips to tailor the fit to various hand sizes and grip styles. It boasts a high-precision optical sensor with up to 12,000 DPI, ensuring accurate tracking, and utilizes Omron switches for responsive and durable clicks.',
     category: 'Accessories',
   ),
   Product(
@@ -516,7 +516,8 @@ final List<Product> products = [
     imageUrl:
         'https://sm.ign.com/t/ign_pk/cover/a/acer-preda/acer-predator-aethon-500_gcud.300.png',
     price: 7999,
-    description: 'The Acer Predator Aethon CG500 series keyboards are built for immersive gaming experiences, focusing on customization and performance. Available in full-size and TKL (tenkeyless) layouts, they feature Predator’s custom-engineered mechanical switches.',
+    description:
+        'The Acer Predator Aethon CG500 series keyboards are built for immersive gaming experiences, focusing on customization and performance. Available in full-size and TKL (tenkeyless) layouts, they feature Predator’s custom-engineered mechanical switches.',
     category: 'Accessories',
   ),
   Product(
@@ -524,7 +525,8 @@ final List<Product> products = [
     imageUrl:
         'https://th.bing.com/th/id/R.24a12b0030bbbe89ccd1cf49eb5ef00d?rik=Dfxj16XlL0ZQnQ&riu=http%3a%2f%2fwww.acerstore.cl%2fcdn%2fshop%2ffiles%2fheadset_1a-1.png%3fv%3d1724192851&ehk=oxdlPI%2fzhd%2fPyFkqj8Xw903xxcoNoiECFVozSMv1L70%3d&risl=&pid=ImgRaw&r=0',
     price: 3999,
-    description: 'Featuring a sleek, minimalist design, these headsets boast larger 40mm drivers delivering immersive sound with enhanced bass for a competitive edge.  They prioritize long-lasting comfort with plush memory foam earcups and adjustable headbands, making them suitable for extended gaming sessions.',
+    description:
+        'Featuring a sleek, minimalist design, these headsets boast larger 40mm drivers delivering immersive sound with enhanced bass for a competitive edge.  They prioritize long-lasting comfort with plush memory foam earcups and adjustable headbands, making them suitable for extended gaming sessions.',
     category: 'Accessories',
   ),
   Product(
@@ -557,7 +559,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 199999.99,
-    description: "The 2024 Predator Helios 16 represents Acer's continued push into premium gaming laptops. This generation boasts Intel's latest 14th Gen HX Series processors paired with up to NVIDIA GeForce RTX 4090 graphics, delivering exceptional performance for demanding games and creative applications. A standout feature is the 16-inch WQXGA mini-LED display with a blazing 240Hz refresh rate",
+    description:
+        "The 2024 Predator Helios 16 represents Acer's continued push into premium gaming laptops. This generation boasts Intel's latest 14th Gen HX Series processors paired with up to NVIDIA GeForce RTX 4090 graphics, delivering exceptional performance for demanding games and creative applications. A standout feature is the 16-inch WQXGA mini-LED display with a blazing 240Hz refresh rate",
     category: 'High-End Gaming',
   ),
   Product(
@@ -565,7 +568,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 189999.99,
-    description: 'Intel Core i9-13900HX, NVIDIA RTX 4080, 32GB RAM, 2TB SSD',
+    description:
+        'The Acer Predator Triton 17 X (PTX17-71) is a premium gaming laptop that combines cutting-edge performance with a sleek, minimalist design. Powered by up to a 13th Gen Intel® Core™ i9-13900HX processor and NVIDIA® GeForce RTX™ 4090 GPU.',
     category: 'High-End Gaming',
   ),
   Product(
@@ -573,7 +577,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 89999.99,
-    description: 'Intel Core i5-13500H, NVIDIA RTX 4060, 16GB RAM, 512GB SSD',
+    description:
+        'The Acer Nitro 5 (AN515-57-74QK) is a mid-range gaming laptop that offers a balance of performance and affordability. It features a 15.6-inch Full HD IPS display, up to a 13th Gen Intel® Core™ i7-13700H processor, and NVIDIA® GeForce RTX™ 4060 GPU.',
     category: 'Mid-Range Gaming',
   ),
   Product(
@@ -581,7 +586,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 109999.99,
-    description: 'Intel Core i7-13700H, NVIDIA RTX 4070, 16GB RAM, 1TB SSD',
+    description:
+        'The Acer Travelmate 7 (PX715-51) is a business laptop that offers a balance of performance and portability. It features a 15.6-inch Full HD IPS display, up to a 13th Gen Intel® Core™ i7-13700H processor, and NVIDIA® GeForce RTX™ 4070 GPU.',
     category: 'Mid-Range Gaming',
   ),
   Product(
@@ -589,7 +595,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 59999.99,
-    description: 'Intel Core i5-12450H, NVIDIA RTX 3050, 8GB RAM, 512GB SSD',
+    description:
+        'The Acer Aspire Gaming 5 (AN515-57-54QK) is an entry-level gaming laptop that offers a balance of performance and affordability. It features a 15.6-inch Full HD IPS display, up to a 12th Gen Intel® Core™ i5-12450H processor, and NVIDIA® GeForce RTX™ 3050 GPU.',
     category: 'Entry Level Gaming',
   ),
 
@@ -599,7 +606,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 129999.99,
-    description: 'AMD Ryzen 7 7840U, 16GB RAM, 1TB SSD, 3.2K OLED Display',
+    description:
+        'The Acer Swift Edge 16 (SF16-61) is a high-performance business laptop that offers a balance of performance and portability. It features a 16-inch 3.2K OLED display, up to a 13th Gen Intel® Core™ i7-13700H processor, and NVIDIA® GeForce RTX™ 4060 GPU.',
     category: 'Business & Productivity',
   ),
   Product(
@@ -607,7 +615,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 89999.99,
-    description: 'Intel Core i7-13700H, 16GB RAM, 1TB SSD, 2.8K OLED Display',
+    description:
+        'The Acer Swift Go 14 (SFG14-73) is a high-performance business laptop that offers a balance of performance and portability. It features a 14-inch 2.8K OLED display, up to a 13th Gen Intel® Core™ i7-13700H processor, and NVIDIA® GeForce RTX™ 4060 GPU.',
     category: 'Business & Productivity',
   ),
   Product(
@@ -615,7 +624,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 79999.99,
-    description: 'Intel Core i5-1335U, 16GB RAM, 512GB SSD, Full HD Display',
+    description:
+        'The Acer TravelMate P4 (PT415-51) is a high-performance business laptop that offers a balance of performance and portability. It features a 15.6-inch Full HD IPS display, up to a 13th Gen Intel® Core™ i7-13700H processor, and NVIDIA® GeForce RTX™ 4060 GPU.',
     category: 'Business & Productivity',
   ),
   Product(
@@ -623,7 +633,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 54999.99,
-    description: 'Intel Core i3-1315U, 8GB RAM, 256GB SSD, Full HD Display',
+    description:
+        'The Acer TravelMate P2 (PT215-51) is a high-performance business laptop that offers a balance of performance and portability. It features a 15.6-inch Full HD IPS display, up to a 13th Gen Intel® Core™ i7-13700H processor, and NVIDIA® GeForce RTX™ 4060 GPU.',
     category: 'Business & Productivity',
   ),
 
@@ -633,7 +644,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 149999.99,
-    description: '45" OLED Gaming Monitor, 3440x1440, 240Hz, 0.01ms',
+    description:
+        'The Acer Predator X45 (X45-1) is a high-performance gaming monitor that offers a balance of performance and portability. It features a 45-inch OLED display, 3440x1440 resolution, 240Hz refresh rate, and 0.01ms response time.',
     category: 'Monitors',
   ),
   Product(
@@ -641,7 +653,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 89999.99,
-    description: '27" 4K Gaming Monitor, 160Hz, G-SYNC Ultimate',
+    description:
+        'The Acer Predator X27 (X27-1) is a high-performance gaming monitor that offers a balance of performance and portability. It features a 27-inch 4K display, 160Hz refresh rate, and G-SYNC Ultimate.',
     category: 'Monitors',
   ),
   Product(
@@ -649,7 +662,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 29999.99,
-    description: '27" QHD Gaming Monitor, 170Hz, AMD FreeSync Premium',
+    description:
+        'The Acer Nitro XV272U (XV272U-1) is a high-performance gaming monitor that offers a balance of performance and portability. It features a 27-inch 170Hz display, AMD FreeSync Premium, and 95% DCI-P3 color gamut.',
     category: 'Monitors',
   ),
   Product(
@@ -657,7 +671,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 34999.99,
-    description: '34" UltraWide QHD Monitor, 100Hz, USB-C',
+    description:
+        'The Acer CB342CK (CB342CK-1) is a high-performance gaming monitor that offers a balance of performance and portability. It features a 34-inch 100Hz display, USB-C, and 95% DCI-P3 color gamut.',
     category: 'Monitors',
   ),
 
@@ -667,7 +682,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 7999.99,
-    description: 'Wireless Gaming Mouse, 16000 DPI, RGB',
+    description:
+        'The Acer Predator Cestus 350 (C350-1) is a high-performance gaming mouse that offers a balance of performance and portability. It features a 16000 DPI, RGB, and 95% DCI-P3 color gamut.',
     category: 'Accessories',
   ),
   Product(
@@ -675,7 +691,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 12999.99,
-    description: 'Mechanical Gaming Keyboard, Blue Switches, RGB',
+    description:
+        'The Acer Predator Aethon 500 (A500-1) is a high-performance gaming keyboard that offers a balance of performance and portability. It features Blue Switches, RGB, and 95% DCI-P3 color gamut.',
     category: 'Accessories',
   ),
   Product(
@@ -683,7 +700,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 5999.99,
-    description: '7.1 Virtual Surround Gaming Headset',
+    description:
+        'The Acer Predator Galea 350 (G350-1) is a high-performance gaming headset that offers a balance of performance and portability. It features 7.1 Virtual Surround, RGB, and 95% DCI-P3 color gamut.',
     category: 'Accessories',
   ),
   Product(
@@ -691,7 +709,8 @@ final List<Product> sampleProducts = [
     imageUrl:
         'https://plus.unsplash.com/premium_photo-1711051475117-f3a4d3ff6778?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
     price: 1499.99,
-    description: 'XXL Size, Anti-slip Base, Cloth Surface',
+    description:
+        'The Acer Nitro Gaming Mouse Pad (MGP250-1) is a high-performance gaming mouse pad that offers a balance of performance and portability. It features XXL Size, Anti-slip Base, Cloth Surface, and 95% DCI-P3 color gamut.',
     category: 'Accessories',
   ),
 ];
