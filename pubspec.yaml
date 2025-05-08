@@ -46,6 +46,7 @@ dependencies:
   url_launcher: ^6.3.1
   smooth_page_indicator: ^1.2.1
   firebase_core: ^3.12.1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
