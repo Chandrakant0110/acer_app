@@ -969,29 +969,12 @@ class OrderDetailsPage extends StatelessWidget {
                       label: 'Review',
                       color: Colors.amber.shade700,
                       onTap: () {
-                        // Check if payment method is selected and valid
-                        if (order.paymentMethod.isEmpty ||
-                            order.paymentMethod == 'Not Selected') {
-                          // Show error message if payment method is not selected
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Please select a payment method before writing a review'),
-                              behavior: SnackBarBehavior.floating,
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        } else {
-                          // Navigate to review screen if payment method is valid
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Write a review'),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                          // Show review dialog
-                          _showReviewDialog(context);
-                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Write a review'),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -1570,158 +1553,6 @@ class OrderDetailsPage extends StatelessWidget {
       'Dec'
     ];
     return '${date.day} ${months[date.month - 1]} ${date.year}';
-  }
-
-  void _showReviewDialog(BuildContext context) {
-    // Rating state
-    double _rating = 0;
-    String _reviewText = '';
-    bool _submitting = false;
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.shade100,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.rate_review_outlined,
-                    color: Colors.amber.shade700,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text('Write a Review'),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Rate your experience',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Star rating
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(5, (index) {
-                      return IconButton(
-                        icon: Icon(
-                          index < _rating ? Icons.star : Icons.star_border,
-                          color: Colors.amber.shade700,
-                          size: 32,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _rating = index + 1;
-                          });
-                        },
-                      );
-                    }),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Tell us about your experience',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Review text input
-                  TextField(
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      hintText: 'Write your review here...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: acerPrimaryColor),
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey.shade50,
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                    onChanged: (value) {
-                      _reviewText = value;
-                    },
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('CANCEL'),
-              ),
-              ElevatedButton(
-                onPressed: _rating == 0
-                    ? null // Disable if no rating
-                    : _submitting
-                        ? null // Disable while submitting
-                        : () {
-                            // Set submitting state
-                            setState(() {
-                              _submitting = true;
-                            });
-
-                            // Simulate submission delay
-                            Future.delayed(const Duration(seconds: 1), () {
-                              Navigator.pop(context);
-
-                              // Show success message
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('Review submitted successfully'),
-                                  behavior: SnackBarBehavior.floating,
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                            });
-                          },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: acerPrimaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  disabledBackgroundColor: Colors.grey.shade300,
-                ),
-                child: _submitting
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Text('SUBMIT'),
-              ),
-            ],
-          );
-        },
-      ),
-    );
   }
 }
 
