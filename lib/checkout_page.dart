@@ -1487,8 +1487,8 @@ class _CheckoutPageState extends State<CheckoutPage>
               ),
             ),
             if (isSelected)
-              Padding(
-                padding: const EdgeInsets.only(left: 8),
+              const Padding(
+                padding: EdgeInsets.only(left: 8),
                 child: Icon(
                   Icons.check_circle,
                   size: 16,
