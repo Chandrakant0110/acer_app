@@ -1,3 +1,4 @@
+import 'package:acer_app/order_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../main.dart'; // Import main.dart which contains OrderProvider and OrderStatus
@@ -26,7 +27,8 @@ class OrderTrackerPage extends StatelessWidget {
                   margin: const EdgeInsets.all(8.0),
                   child: ListTile(
                     title: Text('Order ID: ${order.id}'),
-                    subtitle: Text('Status: ${order.status.toString().split('.').last}'),
+                    subtitle: Text(
+                        'Status: ${order.status.toString().split('.').last}'),
                     trailing:
                         Text('Total: ₹${order.totalAmount.toStringAsFixed(0)}'),
                     onTap: () {
