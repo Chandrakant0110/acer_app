@@ -8476,59 +8476,58 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 }
 
+List<Widget> _buildTimelineIndicators(OrderStatus currentStatus) {
+  final List<Widget> indicators = [];
+  final List<OrderStatus> statuses = OrderStatus.values.toList();
+  final int currentStatusIndex = statuses.indexOf(currentStatus);
 
-  List<Widget> _buildTimelineIndicators(OrderStatus currentStatus) {
-    final List<Widget> indicators = [];
-    final List<OrderStatus> statuses = OrderStatus.values.toList();
-    final int currentStatusIndex = statuses.indexOf(currentStatus);
-
-    for (int i = 0; i < statuses.length; i++) {
-      // Skip irrelevant statuses
-      if (statuses[i] == OrderStatus.cancelled ||
-          statuses[i] == OrderStatus.returned) {
-        continue;
-      }
-
-      final bool isActive = i <= currentStatusIndex;
-      final bool isLast =
-          i == statuses.length - 3; // -3 because we skip 2 statuses
-
-      indicators.add(
-        Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: isActive ? acerPrimaryColor : Colors.grey[300],
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isActive ? acerPrimaryColor : Colors.grey[300]!,
-              width: 2,
-            ),
-          ),
-          child: isActive
-              ? const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 14,
-                )
-              : null,
-        ),
-      );
-
-      // Add line connecting indicators except for last one
-      if (!isLast) {
-        indicators.add(
-          Container(
-            width: 2,
-            height: 30,
-            color: i < currentStatusIndex ? acerPrimaryColor : Colors.grey[300],
-          ),
-        );
-      }
+  for (int i = 0; i < statuses.length; i++) {
+    // Skip irrelevant statuses
+    if (statuses[i] == OrderStatus.cancelled ||
+        statuses[i] == OrderStatus.returned) {
+      continue;
     }
 
-    return indicators;
+    final bool isActive = i <= currentStatusIndex;
+    final bool isLast =
+        i == statuses.length - 3; // -3 because we skip 2 statuses
+
+    indicators.add(
+      Container(
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          color: isActive ? acerPrimaryColor : Colors.grey[300],
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: isActive ? acerPrimaryColor : Colors.grey[300]!,
+            width: 2,
+          ),
+        ),
+        child: isActive
+            ? const Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 14,
+              )
+            : null,
+      ),
+    );
+
+    // Add line connecting indicators except for last one
+    if (!isLast) {
+      indicators.add(
+        Container(
+          width: 2,
+          height: 30,
+          color: i < currentStatusIndex ? acerPrimaryColor : Colors.grey[300],
+        ),
+      );
+    }
   }
+
+  return indicators;
+}
 
 // Add OrdersPage after OrderDetailsPage
 class OrdersPage extends StatelessWidget {
