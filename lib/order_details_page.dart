@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+      import 'package:flutter/material.dart';
 import 'main.dart';
 import 'dart:ui';
 
@@ -19,46 +19,96 @@ class OrderDetailsPage extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          // Custom app bar with gradient and blur effect
+          // Enhanced app bar with gradient and blur effect
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
             stretch: true,
             backgroundColor: acerPrimaryColor,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back, color: acerPrimaryColor),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            actions: [
+              Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: IconButton(
+                  icon:
+                      const Icon(Icons.share_outlined, color: acerPrimaryColor),
+                  onPressed: () {
+                    // Add share functionality
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: const EdgeInsets.only(bottom: 16),
               title: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
                 child: const Text(
                   'Order Details',
                   style: TextStyle(
                     color: acerPrimaryColor,
                     fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
                 ),
               ),
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Gradient background
                   Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                         colors: [
                           acerPrimaryColor,
                           acerAccentColor,
+                          acerPrimaryColor.withOpacity(0.8),
                         ],
                       ),
                     ),
                   ),
-                  // Pattern overlay
                   Opacity(
                     opacity: 0.1,
                     child: CustomPaint(
@@ -75,7 +125,7 @@ class OrderDetailsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Order status banner
+                // Enhanced status banner
                 _buildStatusBanner(context, calculatedStatus),
 
                 // Order info cards
@@ -84,32 +134,32 @@ class OrderDetailsPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Order summary card
+                      // Enhanced order summary card
                       _buildOrderSummaryCard(),
 
                       const SizedBox(height: 24),
 
-                      // Delivery address card
+                      // Enhanced delivery address card
                       _buildDeliveryAddressCard(),
 
                       const SizedBox(height: 24),
 
-                      // Order items
+                      // Enhanced order items
                       _buildOrderItemsSection(),
 
                       const SizedBox(height: 24),
 
-                      // Payment information
+                      // Enhanced payment information
                       _buildPaymentInformationCard(),
 
                       const SizedBox(height: 24),
 
-                      // Order actions
-                      _buildOrderActions(context),
+                      // Enhanced order actions with cancellation
+                      _buildOrderActions(context, calculatedStatus),
 
                       const SizedBox(height: 24),
 
-                      // Order timeline
+                      // Enhanced order timeline
                       _buildOrderTimeline(calculatedStatus),
 
                       const SizedBox(height: 32),
@@ -182,6 +232,13 @@ class OrderDetailsPage extends StatelessWidget {
             width: 1,
           ),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: statusColor.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -190,6 +247,13 @@ class OrderDetailsPage extends StatelessWidget {
             decoration: BoxDecoration(
               color: statusColor.withOpacity(0.2),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: statusColor.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Icon(
               statusIcon,
@@ -226,6 +290,13 @@ class OrderDetailsPage extends StatelessWidget {
             decoration: BoxDecoration(
               color: statusColor.withOpacity(0.2),
               borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: statusColor.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: GestureDetector(
               onTap: () {
@@ -560,53 +631,171 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderActions(BuildContext context) {
-    return Row(
+  Widget _buildOrderActions(BuildContext context, OrderStatus status) {
+    return Column(
       children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Invoice downloaded'),
-                  behavior: SnackBarBehavior.floating,
+        Row(
+          children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: acerPrimaryColor.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-              );
-            },
-            icon: const Icon(Icons.download_outlined),
-            label: const Text('DOWNLOAD INVOICE'),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              side: const BorderSide(color: acerPrimaryColor),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Invoice downloaded'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.download_outlined),
+                  label: const Text('DOWNLOAD INVOICE'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: acerPrimaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: const BorderSide(color: acerPrimaryColor),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: acerPrimaryColor.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Connecting to support...'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.support_agent),
+                  label: const Text('NEED HELP?'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: acerPrimaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (status != OrderStatus.cancelled &&
+            status != OrderStatus.delivered &&
+            status != OrderStatus.returned) ...[
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.red,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text('Cancel Order'),
+                      ],
+                    ),
+                    content: const Text(
+                      'Are you sure you want to cancel this order? This action cannot be undone.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('NO'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Order cancelled successfully'),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('YES, CANCEL'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              icon: const Icon(Icons.cancel_outlined),
+              label: const Text('CANCEL ORDER'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Connecting to support...'),
-                  behavior: SnackBarBehavior.floating,
-                ),
-              );
-            },
-            icon: const Icon(Icons.support_agent),
-            label: const Text('NEED HELP?'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: acerPrimaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
+        ],
       ],
     );
   }
@@ -616,22 +805,26 @@ class OrderDetailsPage extends StatelessWidget {
       {
         'icon': Icons.check_circle_outline,
         'title': 'Order Confirmed',
-        'status': OrderStatus.confirmed
+        'status': OrderStatus.confirmed,
+        'description': 'Your order has been confirmed'
       },
       {
         'icon': Icons.sync,
         'title': 'Processing',
-        'status': OrderStatus.processing
+        'status': OrderStatus.processing,
+        'description': 'Your order is being processed'
       },
       {
         'icon': Icons.local_shipping_outlined,
         'title': 'Shipped',
-        'status': OrderStatus.shipped
+        'status': OrderStatus.shipped,
+        'description': 'Your order is on its way'
       },
       {
         'icon': Icons.done_all,
         'title': 'Delivered',
-        'status': OrderStatus.delivered
+        'status': OrderStatus.delivered,
+        'description': 'Your order has been delivered'
       },
     ];
 
@@ -700,6 +893,15 @@ class OrderDetailsPage extends StatelessWidget {
                         color:
                             isCompleted ? acerPrimaryColor : Colors.grey[300],
                         shape: BoxShape.circle,
+                        boxShadow: isCompleted
+                            ? [
+                                BoxShadow(
+                                  color: acerPrimaryColor.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ]
+                            : null,
                       ),
                       child: Icon(
                         step['icon'] as IconData,
@@ -726,7 +928,7 @@ class OrderDetailsPage extends StatelessWidget {
                           if (isCurrent) ...[
                             const SizedBox(height: 4),
                             Text(
-                              'Your order is being processed',
+                              step['description'] as String,
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey[600],
@@ -813,7 +1015,7 @@ class OrderDetailsPage extends StatelessWidget {
   }
 }
 
-// Pattern painter for the order details header
+// Enhanced pattern painter for the order details header
 class OrderDetailsPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -836,12 +1038,17 @@ class OrderDetailsPatternPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
+    // Add more decorative elements
     canvas.drawCircle(
         Offset(size.width * 0.8, size.height * 0.3), 30, accentPaint);
     canvas.drawCircle(
         Offset(size.width * 0.2, size.height * 0.8), 20, accentPaint);
     canvas.drawCircle(
         Offset(size.width * 0.6, size.height * 0.7), 15, accentPaint);
+    canvas.drawCircle(
+        Offset(size.width * 0.4, size.height * 0.2), 25, accentPaint);
+    canvas.drawCircle(
+        Offset(size.width * 0.7, size.height * 0.5), 18, accentPaint);
   }
 
   @override
