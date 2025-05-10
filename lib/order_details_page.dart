@@ -638,9 +638,9 @@ class OrderDetailsPage extends StatelessWidget {
                               top: 0,
                               child: Container(
                                 padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
+                                decoration: const BoxDecoration(
                                   color: acerPrimaryColor,
-                                  borderRadius: const BorderRadius.only(
+                                  borderRadius: BorderRadius.only(
                                     topRight: Radius.circular(8),
                                     bottomLeft: Radius.circular(8),
                                   ),
@@ -1381,7 +1381,7 @@ class OrderDetailsPage extends StatelessWidget {
                                       ),
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 4),
-                                      child: Row(
+                                      child: const Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Icon(
@@ -1389,7 +1389,7 @@ class OrderDetailsPage extends StatelessWidget {
                                             size: 12,
                                             color: acerPrimaryColor,
                                           ),
-                                          const SizedBox(width: 4),
+                                          SizedBox(width: 4),
                                           Text(
                                             'In Progress',
                                             style: TextStyle(
