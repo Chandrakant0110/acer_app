@@ -1345,13 +1345,14 @@ class _CheckoutPageState extends State<CheckoutPage>
                     hint: const Text('Select your bank'),
                     value: _selectedBank,
                     items: [
-                      'State Bank of India',
+                      'State Bank of India (SBI)',
                       'HDFC Bank',
                       'ICICI Bank',
                       'Axis Bank',
                       'Kotak Mahindra Bank',
                       'Punjab National Bank',
-                      'Yes Bank',
+                      'Central Bank of India',
+                      'Bank of Baroda',
                     ].map((String bank) {
                       return DropdownMenuItem<String>(
                         value: bank,
@@ -2402,7 +2403,7 @@ class _CheckoutPageState extends State<CheckoutPage>
     );
 
     // Simulate processing time, then place the order
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 8), () {
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.pop(context); // Close loading dialog
         _placeOrder();

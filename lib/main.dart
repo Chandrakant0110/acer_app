@@ -4184,13 +4184,6 @@ class _LoginPageState extends State<LoginPage>
                           // Login button with pulse animation
                           _buildAnimatedLoginButton(),
 
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {},
-                            child: const Text('Sign In with Google'),
-                          ),
-                          const SizedBox(height: 24),
-
                           // Sign up link
                           _buildSignUpContainer(),
                         ],
@@ -6682,7 +6675,7 @@ class _EditProfilePageState extends State<EditProfilePage>
 
     try {
       // Simulate network delay
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 5));
 
       // ignore: use_build_context_synchronously
       final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -7201,7 +7194,7 @@ class _AcerAssistantChatPageState extends State<AcerAssistantChatPage> {
     });
 
     // Simulate processing delay
-    await Future.delayed(const Duration(milliseconds: 800));
+    await Future.delayed(const Duration(milliseconds: 10000));
 
     // Process the user's message and generate a response
     final response = _generateResponse(text);
