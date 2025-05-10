@@ -10,21 +10,18 @@ import 'pages/my_orders_page.dart';
 import 'address_managment.dart' as addr_mgmt;
 
 // Placeholder for HomePage if needed
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Acer Store'),
-        backgroundColor: acerPrimaryColor,
-      ),
-      body: const Center(
-        child: Text('Home Page'),
-      ),
-    );
-  }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Acer Store'),
+      backgroundColor: acerPrimaryColor,
+    ),
+    body: const Center(
+      child: Text('Home Page'),
+    ),
+  );
 }
 
 class CheckoutPage extends StatefulWidget {
