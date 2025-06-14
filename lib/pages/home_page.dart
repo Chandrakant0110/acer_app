@@ -19,12 +19,12 @@ class HomePage extends StatelessWidget {
           children: [
             // Banner section
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Explore Acer Series',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
             const SizedBox(height: 20),
 
@@ -38,7 +38,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => PredatorSeries(),
+                    builder: (context) => const PredatorSeries(),
                   ),
                 );
               },
@@ -56,7 +56,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AspireSeries(),
+                    builder: (context) => const AspireSeries(),
                   ),
                 );
               },
@@ -73,7 +73,7 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SwiftSeries(),
+                    builder: (context) => const SwiftSeries(),
                   ),
                 );
               },

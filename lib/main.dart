@@ -1,31 +1,34 @@
 import 'package:acer_app/order_details_page.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'pages/edit_profile_page.dart';
 import 'firebase_options.dart';
 import 'location_page.dart';
+import 'models/user_model.dart';
 import 'all_categories_page.dart';
 import 'all_products_page.dart';
 import 'dart:ui';
 import 'forgot_password_page.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' hide User;
 import 'error_page.dart';
-import 'pages/my_orders_page.dart'; // Import the new MyOrdersPage
+import 'pages/my_orders_page.dart'; 
 import 'pages/privacy_policy_page.dart';
 import 'about_acer_store.dart';
-import 'help_support.dart'; // Import the HelpSupport page
-import 'terms_services.dart'; // Import the TermsServices page
-import 'email_prefernces.dart'; // Import the EmailPreferences page
-import 'address_managment.dart'; // Import the AddressManagement page
-import 'payment_methods.dart'; // Import the PaymentMethods page
+import 'help_support.dart'; 
+import 'terms_services.dart'; 
+import 'email_prefernces.dart'; 
+import 'address_managment.dart'; 
+import 'payment_methods.dart';
 import 'checkout_page.dart'
-    as new_checkout; // Import the new beautiful checkout page
-// Import the new MyOrdersPage
-// Import the new MyOrdersPage
-// Import the new MyOrdersPage
+    as new_checkout; 
+import 'providers/theme_provider.dart'; 
+import 'theme/app_theme.dart'; 
+import 'beautiful_cart_page.dart'; 
 
 // Define Acer brand colors
 const Color acerPrimaryColor = Color(0xFF83B81A); // Acer green
@@ -335,19 +338,7 @@ class NotificationItem {
   }
 }
 
-class User {
-  final String name;
-  final String email;
-  final String phone;
-  final String? imageUrl;
 
-  User({
-    required this.name,
-    required this.email,
-    required this.phone,
-    this.imageUrl,
-  });
-}
 
 // Sample product data
 final List<Product> products = [
@@ -518,8 +509,8 @@ final List<Product> products = [
         'https://sm.ign.com/t/ign_pk/cover/a/acer-preda/acer-predator-aethon-500_gcud.300.png',
     price: 7999,
     description:
-        'The Acer Predator Aethon CG500 series keyboards are built for immersive gaming experiences, focusing on customization and performance. Available in full-size and TKL (tenkeyless) layouts, they feature Predator’s custom-engineered mechanical switches.',
-    category: 'Accessories',
+        "The Acer Predator Aethon CG500 series keyboards are built for immersive gaming experiences, focusing on customization and performance. Available in full-size and TKL (tenkeyless) layouts, they feature Predator's custom-engineered mechanical switches.",
+    category: "Accessories",
   ),
   Product(
     name: 'Acer Nitro Headset',
@@ -723,7 +714,7 @@ class DotPatternPainter extends CustomPainter {
     const dotSize = 2.0;
     const spacing = 20.0;
     final paint = Paint()
-      ..color = Colors.white
+      ..color = Colors.white.withOpacity(0.7) // Softer white
       ..strokeWidth = dotSize
       ..strokeCap = StrokeCap.round;
 
@@ -885,410 +876,6 @@ class _SearchPageState extends State<SearchPage> {
   }
 }
 
-class CartPage extends StatelessWidget {
-  const CartPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shopping Cart'),
-        backgroundColor: acerPrimaryColor,
-        foregroundColor: Colors.white,
-      ),
-      body: Consumer<CartProvider>(
-        builder: (context, cart, child) {
-          if (cart.items.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_cart_outlined,
-                    size: 100,
-                    color: Colors.grey[300],
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Your cart is empty',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Add products to your cart to see them here',
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.shopping_bag),
-                    label: const Text('Continue Shopping'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: acerPrimaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  itemCount: cart.items.length,
-                  itemBuilder: (context, index) {
-                    final product = cart.items.keys.elementAt(index);
-                    final quantity = cart.items[product] ?? 0;
-                    final itemTotal = product.price * quantity;
-
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Product image
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Container(
-                                width: 100,
-                                height: 100,
-                                color: acerPrimaryColor.withOpacity(0.1),
-                                child: Image.network(
-                                  product.imageUrl,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Container(
-                                    color: acerPrimaryColor.withOpacity(0.1),
-                                    child: const Icon(
-                                      Icons.image_not_supported,
-                                      size: 40,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            // Product details
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.name,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    'Unit Price: ₹${product.price.toStringAsFixed(0)}',
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      // Quantity controls
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.grey[300]!),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            // Decrease button
-                                            InkWell(
-                                              onTap: () {
-                                                cart.removeItem(product);
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.grey[200],
-                                                  borderRadius:
-                                                      const BorderRadius.only(
-                                                    topLeft: Radius.circular(7),
-                                                    bottomLeft:
-                                                        Radius.circular(7),
-                                                  ),
-                                                ),
-                                                child: const Icon(Icons.remove,
-                                                    size: 16),
-                                              ),
-                                            ),
-                                            // Quantity display
-                                            Container(
-                                              width: 40,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                '$quantity',
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                            // Increase button
-                                            InkWell(
-                                              onTap: () {
-                                                cart.addItem(product);
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                decoration: const BoxDecoration(
-                                                  color: acerPrimaryColor,
-                                                  borderRadius:
-                                                      BorderRadius.only(
-                                                    topRight:
-                                                        Radius.circular(7),
-                                                    bottomRight:
-                                                        Radius.circular(7),
-                                                  ),
-                                                ),
-                                                child: const Icon(
-                                                  Icons.add,
-                                                  size: 16,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      // Item total
-                                      Text(
-                                        '₹${itemTotal.toStringAsFixed(0)}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                          color: acerPrimaryColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // Remove button
-                            IconButton(
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.redAccent,
-                              ),
-                              onPressed: () {
-                                cart.removeItemCompletely(product);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        '${product.name} removed from cart'),
-                                    duration: const Duration(seconds: 2),
-                                    action: SnackBarAction(
-                                      label: 'UNDO',
-                                      onPressed: () {
-                                        cart.addItem(product);
-                                      },
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              // Order summary
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Order Summary',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Total Items:',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          '${cart.itemCount}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Subtotal:',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          '₹${cart.totalAmount.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Shipping:',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        const Text(
-                          '₹150',
-                          style: TextStyle(
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const Divider(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Total:',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          '₹${cart.totalAmount.toStringAsFixed(0)}',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: acerPrimaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // Navigate to checkout page
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => new_checkout.CheckoutPage(
-                                cartItems: cart.items,
-                                totalAmount: cart.totalAmount,
-                              ),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: acerPrimaryColor,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: const Text(
-                          'PROCEED TO CHECKOUT',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
@@ -1345,408 +932,445 @@ class _SettingsPageState extends State<SettingsPage>
     await prefs.setBool('notifications', _notifications);
   }
 
-  void _applyTheme() {
+  void _applyTheme() async {
     // Apply theme changes immediately
     if (!mounted) return;
-    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
-    themeProvider.setDarkMode(_darkMode);
+    
+    // Import ThemeController
+    // ignore: await_only_futures
+    await Provider.of<ThemeProvider>(context, listen: false).setDarkMode(_darkMode);
+  }
+
+  Widget _buildUserImage(String imageUrl, double width, double height) {
+    if (imageUrl.startsWith('data:image')) {
+      // Handle base64 encoded images
+      final base64Data = imageUrl.split(',').last;
+      final bytes = base64Decode(base64Data);
+      return Image.memory(
+        bytes,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(
+          Icons.person,
+          size: 54,
+          color: acerPrimaryColor,
+        ),
+      );
+    } else {
+      // Handle network images
+      return Image.network(
+        imageUrl,
+        width: width,
+        height: height,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Icon(
+          Icons.person,
+          size: 54,
+          color: acerPrimaryColor,
+        ),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+              color: acerPrimaryColor,
+            ),
+          );
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context).currentUser;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  acerPrimaryColor.withAlpha(20),
-                  Colors.white,
-                ],
-              ),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(64),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.tertiary,
+              ],
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.primary.withAlpha(80),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-
-          // Main content
-          CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              // App Bar
-              SliverAppBar(
-                expandedHeight: 120,
-                pinned: true,
-                backgroundColor: acerPrimaryColor,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: const Text(
-                    'Settings',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+          child: AppBar(
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(30),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  titlePadding: const EdgeInsets.only(left: 16.0, bottom: 16.0),
-                  centerTitle: false,
-                  background: Stack(
-                    children: [
-                      // Decorative background
-                      Positioned.fill(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                acerPrimaryColor,
-                                acerAccentColor,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Decorative pattern
-                      Positioned.fill(
-                        child: Opacity(
-                          opacity: 0.1,
-                          child: CustomPaint(
-                            painter: DotPatternPainter(),
-                          ),
-                        ),
-                      ),
-
-                      // Diagonal line decoration
-                      Positioned(
-                        right: -50,
-                        top: 0,
-                        bottom: 0,
-                        width: 200,
-                        child: Transform.rotate(
-                          angle: -0.2,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.white.withOpacity(0.1),
-                                  Colors.white.withOpacity(0.05),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: const Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                    size: 20,
                   ),
                 ),
-                actions: [
-                  IconButton(
-                    icon: const Icon(Icons.help_outline),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HelpSupport(),
-                        ),
-                      );
-                    },
+                const SizedBox(width: 10),
+                const Text(
+                  'Settings',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 25,
+                    letterSpacing: 0.3,
                   ),
-                ],
-              ),
-
-              // Content
-              SliverToBoxAdapter(
-                child: FadeTransition(
-                  opacity: _animation,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // User Profile Card
-                        if (user != null) _buildProfileCard(user),
-
-                        const SizedBox(height: 24),
-
-                        // Account Section
-                        _buildSectionHeader('Account', Icons.person),
-                        _buildAnimatedSettingsCard(
-                          children: [
-                            _buildListTile(
-                              icon: Icons.person_outline,
-                              title: 'Personal Information',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      final userProvider =
-                                          Provider.of<UserProvider>(context,
-                                              listen: false);
-                                      final user = userProvider
-                                          .currentUser; // Get the current user
-                                      if (user == null) {
-                                        // Handle the case where user is null
-                                        return const ErrorPage(); // Redirect to an error page or show a message
-                                      }
-                                      return EditProfilePage(
-                                          user:
-                                              user); // Pass the user, ensuring it's non-null
-                                    },
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1),
-                            _buildListTile(
-                              icon: Icons.location_on_outlined,
-                              title: 'Address Management',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AddressManagement(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1),
-                            _buildListTile(
-                              icon: Icons.payment_outlined,
-                              title: 'Payment Methods',
-                              subtitle: 'Credit cards, UPI, and more',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const PaymentMethods(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Appearance Section
-                        _buildSectionHeader(
-                            'Appearance', Icons.palette_outlined),
-                        _buildAnimatedSettingsCard(
-                          children: [
-                            SwitchListTile(
-                              title: const Text('Dark Mode'),
-                              subtitle:
-                                  const Text('Enable dark theme for the app'),
-                              secondary: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                decoration: BoxDecoration(
-                                  color: _darkMode
-                                      ? Colors.indigo.withAlpha(30)
-                                      : Colors.amber.withAlpha(30),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: (_darkMode
-                                              ? Colors.indigo
-                                              : Colors.amber)
-                                          .withAlpha(100),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                child: Icon(
-                                  _darkMode
-                                      ? Icons.dark_mode
-                                      : Icons.light_mode,
-                                  color:
-                                      _darkMode ? Colors.indigo : Colors.amber,
-                                ),
-                              ),
-                              value: _darkMode,
-                              activeColor: acerPrimaryColor,
-                              onChanged: (value) {
-                                setState(() {
-                                  _darkMode = value;
-                                  _saveSettings();
-                                  _applyTheme();
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Theme updated'),
-                                    duration: Duration(seconds: 1),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Notifications Section
-                        _buildSectionHeader(
-                            'Notifications', Icons.notifications_outlined),
-                        _buildAnimatedSettingsCard(
-                          children: [
-                            SwitchListTile(
-                              title: const Text('Push Notifications'),
-                              subtitle: const Text(
-                                  'Receive alerts about deals and new products'),
-                              secondary: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                decoration: BoxDecoration(
-                                  color: _notifications
-                                      ? acerAccentColor.withAlpha(30)
-                                      : Colors.grey.withAlpha(30),
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: (_notifications
-                                              ? acerAccentColor
-                                              : Colors.grey)
-                                          .withAlpha(100),
-                                      blurRadius: 4,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                child: Icon(
-                                  _notifications
-                                      ? Icons.notifications_active
-                                      : Icons.notifications_off,
-                                  color: _notifications
-                                      ? acerAccentColor
-                                      : Colors.grey,
-                                ),
-                              ),
-                              value: _notifications,
-                              activeColor: acerPrimaryColor,
-                              onChanged: (value) {
-                                setState(() {
-                                  _notifications = value;
-                                  _saveSettings();
-                                });
-                              },
-                            ),
-                            const Divider(height: 1),
-                            _buildListTile(
-                              icon: Icons.email_outlined,
-                              title: 'Email Notifications',
-                              subtitle: 'Manage email preferences',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const EmailPreferences(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // About Section
-                        _buildSectionHeader('About', Icons.info_outline),
-                        _buildAnimatedSettingsCard(
-                          children: [
-                            _buildListTile(
-                              icon: Icons.security_outlined,
-                              title: 'Privacy Policy',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const PrivacyPolicyPage(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1),
-                            _buildListTile(
-                              icon: Icons.description_outlined,
-                              title: 'Terms of Service',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const TermsServices(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1),
-                            _buildListTile(
-                              icon: Icons.help_outline,
-                              title: 'Help & Support',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const HelpSupport(),
-                                  ),
-                                );
-                              },
-                            ),
-                            const Divider(height: 1),
-                            _buildListTile(
-                              icon: Icons.info_outline,
-                              title: 'About Acer Store',
-                              subtitle: 'Version 1.9.8',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const AboutAcerStore(),
-                                  ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 30),
-
-                        // Sign Out Button
-                        _buildSignOutButton(),
-
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+            centerTitle: false,
+            elevation: 0,
+            toolbarHeight: 64,
+            actions: [
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withAlpha(20),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.help_outline, size: 20),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HelpSupport(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
           ),
-        ],
+        ),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDarkMode
+                ? [
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.background,
+                  ]
+                : [
+                    acerPrimaryColor.withAlpha(15),
+                    Colors.grey.shade50,
+                    Colors.white,
+                  ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: FadeTransition(
+            opacity: _animation,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // User Profile Card
+                  if (user != null) _buildProfileCard(user),
+
+                  const SizedBox(height: 24),
+
+                  // Account Section
+                  _buildSectionHeader('Account', Icons.person),
+                  _buildAnimatedSettingsCard(
+                    children: [
+                      _buildListTile(
+                        icon: Icons.person_outline,
+                        title: 'Personal Information',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                final userProvider =
+                                    Provider.of<UserProvider>(context,
+                                        listen: false);
+                                final user = userProvider
+                                    .currentUser; // Get the current user
+                                if (user == null) {
+                                  // Handle the case where user is null
+                                  return const ErrorPage(); // Redirect to an error page or show a message
+                                }
+                                return EditProfilePage(
+                                    user:
+                                        user); // Pass the user, ensuring it's non-null
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(height: 1),
+                      _buildListTile(
+                        icon: Icons.location_on_outlined,
+                        title: 'Address Management',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const AddressManagement(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(height: 1),
+                      _buildListTile(
+                        icon: Icons.payment_outlined,
+                        title: 'Payment Methods',
+                        subtitle: 'Credit cards, UPI, and more',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PaymentMethods(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Appearance Section
+                  _buildSectionHeader(
+                      'Appearance', Icons.palette_outlined),
+                  _buildAnimatedSettingsCard(
+                    children: [
+                      SwitchListTile(
+                        title: const Text('Dark Mode'),
+                        subtitle:
+                            const Text('Enable dark theme for the app'),
+                        secondary: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          decoration: BoxDecoration(
+                            color: _darkMode
+                                ? Colors.indigo.withAlpha(30)
+                                : Colors.amber.withAlpha(30),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (_darkMode
+                                        ? Colors.indigo
+                                        : Colors.amber)
+                                    .withAlpha(100),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          child: Icon(
+                            _darkMode
+                                ? Icons.dark_mode
+                                : Icons.light_mode,
+                            color: _darkMode 
+                                ? AppColors.textOnDark 
+                                : Colors.amber,
+                          ),
+                        ),
+                        value: _darkMode,
+                        activeColor: acerPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            _darkMode = value;
+                            _saveSettings();
+                            _applyTheme();
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Theme updated'),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Notifications Section
+                  _buildSectionHeader(
+                      'Notifications', Icons.notifications_outlined),
+                  _buildAnimatedSettingsCard(
+                    children: [
+                      SwitchListTile(
+                        title: const Text('Push Notifications'),
+                        subtitle: const Text(
+                            'Receive alerts about deals and new products'),
+                        secondary: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          decoration: BoxDecoration(
+                            color: _notifications
+                                ? acerAccentColor.withAlpha(30)
+                                : Colors.grey.withAlpha(30),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (_notifications
+                                        ? acerAccentColor
+                                        : Colors.grey)
+                                    .withAlpha(100),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          child: Icon(
+                            _notifications
+                                ? Icons.notifications_active
+                                : Icons.notifications_off,
+                            color: _notifications
+                                ? acerAccentColor
+                                : Colors.grey,
+                          ),
+                        ),
+                        value: _notifications,
+                        activeColor: acerPrimaryColor,
+                        onChanged: (value) {
+                          setState(() {
+                            _notifications = value;
+                            _saveSettings();
+                          });
+                        },
+                      ),
+                      const Divider(height: 1),
+                      _buildListTile(
+                        icon: Icons.email_outlined,
+                        title: 'Email Notifications',
+                        subtitle: 'Manage email preferences',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const EmailPreferences(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // About Section
+                  _buildSectionHeader('About', Icons.info_outline),
+                  _buildAnimatedSettingsCard(
+                    children: [
+                      _buildListTile(
+                        icon: Icons.security_outlined,
+                        title: 'Privacy Policy',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PrivacyPolicyPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(height: 1),
+                      _buildListTile(
+                        icon: Icons.description_outlined,
+                        title: 'Terms of Service',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TermsServices(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(height: 1),
+                      _buildListTile(
+                        icon: Icons.help_outline,
+                        title: 'Help & Support',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HelpSupport(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(height: 1),
+                      _buildListTile(
+                        icon: Icons.info_outline,
+                        title: 'About Acer Store',
+                        subtitle: 'Version 1.9.8',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const AboutAcerStore(),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Sign Out Button
+                  _buildSignOutButton(),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildProfileCard(User user) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: acerPrimaryColor.withAlpha(40),
+            color: isDarkMode 
+                ? AppColors.acerGreen.withAlpha(40) 
+                : acerPrimaryColor.withAlpha(40),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -1762,13 +1386,20 @@ class _SettingsPageState extends State<SettingsPage>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withOpacity(0.8),
-                  Colors.white.withOpacity(0.6),
-                ],
+                colors: isDarkMode
+                    ? [
+                        AppColors.darkCard.withOpacity(0.9),
+                        AppColors.darkSurface.withOpacity(0.7),
+                      ]
+                    : [
+                        Colors.white.withOpacity(0.8),
+                        Colors.white.withOpacity(0.6),
+                      ],
               ),
               border: Border.all(
-                color: Colors.white.withOpacity(0.2),
+                color: isDarkMode 
+                    ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                    : Colors.white.withOpacity(0.2),
                 width: 1.5,
               ),
               borderRadius: BorderRadius.circular(24),
@@ -1801,36 +1432,7 @@ class _SettingsPageState extends State<SettingsPage>
                           child: user.imageUrl != null
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(52),
-                                  child: Image.network(
-                                    user.imageUrl!,
-                                    width: 104,
-                                    height: 104,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(
-                                      Icons.person,
-                                      size: 54,
-                                      color: acerPrimaryColor,
-                                    ),
-                                    loadingBuilder:
-                                        (context, child, loadingProgress) {
-                                      if (loadingProgress == null) return child;
-                                      return Center(
-                                        child: CircularProgressIndicator(
-                                          value: loadingProgress
-                                                      .expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                          color: acerPrimaryColor,
-                                        ),
-                                      );
-                                    },
-                                  ),
+                                  child: _buildUserImage(user.imageUrl!, 104, 104),
                                 )
                               : const Icon(
                                   Icons.person,
@@ -1946,7 +1548,14 @@ class _SettingsPageState extends State<SettingsPage>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EditProfilePage(user: user),
+                          builder: (context) {
+                            final userProvider = Provider.of<UserProvider>(context, listen: false);
+                            final currentUser = userProvider.currentUser;
+                            if (currentUser == null) {
+                              return const ErrorPage();
+                            }
+                            return EditProfilePage(user: currentUser);
+                          },
                         ),
                       );
                     },
@@ -2006,42 +1615,74 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   Widget _buildSectionHeader(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, left: 8.0),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12.0, left: 4.0, right: 4.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            acerPrimaryColor.withAlpha(20),
+            acerPrimaryColor.withAlpha(8),
+            Colors.transparent,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: acerPrimaryColor.withAlpha(40),
+          width: 1,
+        ),
+      ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: acerPrimaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              gradient: LinearGradient(
+                colors: [
+                  acerPrimaryColor,
+                  acerPrimaryColor.withAlpha(200),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: acerPrimaryColor.withAlpha(40),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                ),
+              ],
             ),
             child: Icon(
               icon,
-              color: acerPrimaryColor,
-              size: 20,
+              color: Colors.white,
+              size: 18,
             ),
           ),
           const SizedBox(width: 12),
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 18,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
+              color: acerPrimaryColor,
+              letterSpacing: 0.3,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Container(
-              height: 1,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    acerPrimaryColor.withOpacity(0.3),
-                    Colors.transparent,
-                  ],
-                ),
+          const Spacer(),
+          Container(
+            width: 3,
+            height: 16,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  acerPrimaryColor,
+                  acerPrimaryColor.withAlpha(100),
+                ],
               ),
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
         ],
@@ -2056,24 +1697,38 @@ class _SettingsPageState extends State<SettingsPage>
       curve: Curves.easeOutCubic,
       builder: (context, value, child) {
         return Transform.translate(
-          offset: Offset(0, 20 * (1 - value)),
+          offset: Offset(0, 15 * (1 - value)),
           child: Opacity(
             opacity: value,
             child: Container(
-              margin: const EdgeInsets.only(bottom: 8),
+              margin: const EdgeInsets.only(bottom: 12),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
+                    color: acerPrimaryColor.withAlpha(15),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withAlpha(10),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
                 border: Border.all(
-                  color: Colors.grey[200]!,
+                  color: acerPrimaryColor.withAlpha(25),
                   width: 1,
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white,
+                    Colors.grey.shade50,
+                  ],
                 ),
               ),
               child: ClipRRect(
@@ -2098,47 +1753,80 @@ class _SettingsPageState extends State<SettingsPage>
     return Semantics(
       button: true,
       label: title,
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: acerPrimaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: acerPrimaryColor,
-            size: 20,
-          ),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 15,
-          ),
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        acerPrimaryColor.withAlpha(30),
+                        acerPrimaryColor.withAlpha(15),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: acerPrimaryColor.withAlpha(40),
+                      width: 1,
+                    ),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: acerPrimaryColor,
+                    size: 18,
+                  ),
                 ),
-              )
-            : null,
-        trailing: trailing ??
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: Colors.grey,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          letterSpacing: 0.1,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                            letterSpacing: 0.1,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                trailing ??
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: acerPrimaryColor.withAlpha(15),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: acerPrimaryColor,
+                      ),
+                    ),
+              ],
             ),
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8,
+          ),
         ),
-        dense: true,
       ),
     );
   }
@@ -2146,13 +1834,16 @@ class _SettingsPageState extends State<SettingsPage>
   Widget _buildSignOutButton() {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 4),
+      margin: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [
-            Colors.redAccent,
-            Colors.red,
+            Color(0xFFFF6B6B),
+            Color(0xFFEE5A52),
+            Color(0xFFE74C3C),
           ],
         ),
         boxShadow: [
@@ -2160,31 +1851,53 @@ class _SettingsPageState extends State<SettingsPage>
             color: Colors.red.withAlpha(60),
             blurRadius: 10,
             offset: const Offset(0, 4),
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Colors.black.withAlpha(15),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: ElevatedButton.icon(
-        icon: const Icon(Icons.logout, color: Colors.white),
-        label: const Text(
-          'SIGN OUT',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.0,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            _showSignOutConfirmation();
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withAlpha(30),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  'SIGN OUT',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          foregroundColor: Colors.white,
-          shadowColor: Colors.transparent,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        onPressed: () {
-          _showSignOutConfirmation();
-        },
       ),
     );
   }
@@ -2881,7 +2594,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                             ),
                           ),
                           onPressed: () {
-                            // Add a navigation to checkout page with proper cart items and total amount coming from the context
+                            // Navigate to checkout page with single product for Buy Now
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -2929,7 +2642,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                const CartPage(),
+                                                const BeautifulCartPage(),
                                           ),
                                         );
                                       },
@@ -5288,17 +5001,7 @@ class _SignupPageState extends State<SignupPage>
   }
 }
 
-// Add ThemeProvider class
-class ThemeProvider extends ChangeNotifier {
-  bool _darkMode = false;
-
-  bool get darkMode => _darkMode;
-
-  void setDarkMode(bool value) {
-    _darkMode = value;
-    notifyListeners();
-  }
-}
+// ThemeProvider moved to providers/theme_provider.dart
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -5331,18 +5034,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(builder: (context, userProvider, child) {
-      return MaterialApp(
-        title: 'Acer Store',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-        ),
-        home: userProvider.currentUser != null
-            ? const HomePage() // User is logged in, go to HomePage
-            : const LoginPage(), // User is not logged in, go to LoginPage
-      );
-    });
+    return Consumer2<UserProvider, ThemeProvider>(
+      builder: (context, userProvider, themeProvider, child) {
+        return MaterialApp(
+          title: 'Acer Store',
+          debugShowCheckedModeBanner: false,
+          theme: themeProvider.currentTheme,
+          home: userProvider.currentUser != null
+              ? const HomePage() // User is logged in, go to HomePage
+              : const LoginPage(), // User is not logged in, go to LoginPage
+        );
+      }
+    );
   }
 }
 
@@ -5359,7 +5062,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const HomeContent(),
     const SearchPage(),
-    const CartPage(),
+    const BeautifulCartPage(),
     const MyOrdersPage(), // Add MyOrdersPage
     const LocationPage(),
     const SettingsPage(),
@@ -6542,455 +6245,9 @@ class HomeContent extends StatelessWidget {
   }
 }
 
-// Add EditProfilePage class after the SettingsPage class
-class EditProfilePage extends StatefulWidget {
-  final User user;
 
-  const EditProfilePage({Key? key, required this.user}) : super(key: key);
 
-  @override
-  State<EditProfilePage> createState() => _EditProfilePageState();
-}
 
-class _EditProfilePageState extends State<EditProfilePage>
-    with SingleTickerProviderStateMixin {
-  late TextEditingController _nameController;
-  late TextEditingController _emailController;
-  late TextEditingController _phoneController;
-  String? _selectedImageUrl;
-  bool _isLoading = false;
-  bool _nameError = false;
-  bool _emailError = false;
-  bool _phoneError = false;
-  final _formKey = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController(text: widget.user.name);
-    _emailController = TextEditingController(text: widget.user.email);
-    _phoneController = TextEditingController(text: widget.user.phone);
-    _selectedImageUrl = widget.user.imageUrl;
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  bool _validateInputs() {
-    bool isValid = true;
-
-    // Validate name
-    if (_nameController.text.trim().isEmpty) {
-      setState(() => _nameError = true);
-      isValid = false;
-    } else {
-      setState(() => _nameError = false);
-    }
-
-    // Validate email
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(_emailController.text.trim())) {
-      setState(() => _emailError = true);
-      isValid = false;
-    } else {
-      setState(() => _emailError = false);
-    }
-
-    // Validate phone
-    final phoneRegex = RegExp(r'^\d{10}$');
-    if (!phoneRegex.hasMatch(_phoneController.text.trim())) {
-      setState(() => _phoneError = true);
-      isValid = false;
-    } else {
-      setState(() => _phoneError = false);
-    }
-
-    return isValid;
-  }
-
-  Future<void> _selectImage() async {
-    setState(() {
-      // For demo, we'll use some sample profile pictures
-      final sampleAvatars = [
-        'https://i.pravatar.cc/300?img=1',
-        'https://i.pravatar.cc/300?img=2',
-        'https://i.pravatar.cc/300?img=3',
-        'https://i.pravatar.cc/300?img=4',
-        'https://i.pravatar.cc/300?img=5',
-        'https://i.pravatar.cc/300?img=6',
-        'https://i.pravatar.cc/300?img=7',
-        'https://i.pravatar.cc/300?img=8',
-      ];
-
-      // Show dialog to pick an image
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Select Profile Picture'),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: 300,
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemCount: sampleAvatars.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedImageUrl = sampleAvatars[index];
-                    });
-                    Navigator.pop(context);
-                  },
-                  child: CircleAvatar(
-                    backgroundImage: NetworkImage(sampleAvatars[index]),
-                  ),
-                );
-              },
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            )
-          ],
-        ),
-      );
-    });
-  }
-
-  Future<void> _saveProfile() async {
-    if (!_validateInputs()) return;
-
-    setState(() => _isLoading = true);
-
-    try {
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 5));
-
-      // ignore: use_build_context_synchronously
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-
-      // Create updated user
-      final updatedUser = User(
-        name: _nameController.text.trim(),
-        email: _emailController.text.trim(),
-        phone: _phoneController.text.trim(),
-        imageUrl: _selectedImageUrl,
-      );
-
-      // Update user in provider
-      userProvider.setUser(updatedUser);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error updating profile: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        backgroundColor: acerPrimaryColor,
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  acerPrimaryColor.withAlpha(20),
-                  Colors.white,
-                ],
-              ),
-            ),
-          ),
-
-          // Main content
-          SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Profile picture selector
-                      Center(
-                        child: Stack(
-                          children: [
-                            // Profile image
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: acerAccentColor.withAlpha(60),
-                                    blurRadius: 20,
-                                    spreadRadius: 2,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 60,
-                                backgroundColor:
-                                    acerPrimaryColor.withOpacity(0.2),
-                                child: CircleAvatar(
-                                  radius: 58,
-                                  backgroundColor: Colors.white,
-                                  child: _selectedImageUrl != null
-                                      ? ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(58),
-                                          child: Image.network(
-                                            _selectedImageUrl!,
-                                            width: 116,
-                                            height: 116,
-                                            fit: BoxFit.cover,
-                                            errorBuilder:
-                                                (context, error, stackTrace) =>
-                                                    const Icon(
-                                              Icons.person,
-                                              size: 60,
-                                              color: acerPrimaryColor,
-                                            ),
-                                          ),
-                                        )
-                                      : const Icon(
-                                          Icons.person,
-                                          size: 60,
-                                          color: acerPrimaryColor,
-                                        ),
-                                ),
-                              ),
-                            ),
-
-                            // Edit button overlay
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: GestureDetector(
-                                onTap: _selectImage,
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: acerAccentColor,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.1),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 3),
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.edit,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // Form fields
-                      const Text(
-                        'Personal Information',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: acerPrimaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Name field
-                      _buildTextField(
-                        controller: _nameController,
-                        label: 'Full Name',
-                        icon: Icons.person_outline,
-                        hasError: _nameError,
-                        errorText: 'Please enter your name',
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Email field
-                      _buildTextField(
-                        controller: _emailController,
-                        label: 'Email Address',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                        hasError: _emailError,
-                        errorText: 'Please enter a valid email address',
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Phone field
-                      _buildTextField(
-                        controller: _phoneController,
-                        label: 'Phone Number',
-                        icon: Icons.phone_outlined,
-                        keyboardType: TextInputType.phone,
-                        hasError: _phoneError,
-                        errorText: 'Please enter a valid 10-digit phone number',
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      // Save button
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _saveProfile,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: acerPrimaryColor,
-                            foregroundColor: Colors.white,
-                            disabledBackgroundColor: Colors.grey,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            elevation: 2,
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text(
-                                  'SAVE CHANGES',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    bool hasError = false,
-    String errorText = '',
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-            border: Border.all(
-              color: hasError
-                  ? Colors.red.withOpacity(0.5)
-                  : Colors.grey.withOpacity(0.2),
-              width: 1,
-            ),
-          ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            decoration: InputDecoration(
-              labelText: label,
-              labelStyle: TextStyle(
-                color: hasError ? Colors.red : Colors.grey[600],
-                fontSize: 15,
-              ),
-              prefixIcon: Icon(
-                icon,
-                color:
-                    hasError ? Colors.red : acerPrimaryColor.withOpacity(0.7),
-                size: 20,
-              ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
-          ),
-        ),
-        if (hasError)
-          Padding(
-            padding: const EdgeInsets.only(left: 16, top: 8),
-            child: Text(
-              errorText,
-              style: const TextStyle(
-                color: Colors.red,
-                fontSize: 12,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
 
 // Add this after the EditProfilePage class
 class AcerAssistant extends StatefulWidget {

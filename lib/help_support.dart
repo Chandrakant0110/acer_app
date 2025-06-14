@@ -47,6 +47,8 @@ class _HelpSupportState extends State<HelpSupport>
           bottom: TabBar(
             controller: _tabController,
             indicatorColor: Colors.white,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
             tabs: const [
               Tab(text: 'FAQ', icon: Icon(Icons.help_outline)),
               Tab(text: 'Contact Us', icon: Icon(Icons.message_outlined)),

@@ -36,6 +36,8 @@ class _MyOrdersPageState extends State<MyOrdersPage>
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
           tabs: const [
             Tab(text: 'ACTIVE ORDERS'),
             Tab(text: 'COMPLETED ORDERS'),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'main.dart';
 
 class LocationPage extends StatefulWidget {
@@ -44,192 +45,192 @@ class _LocationPageState extends State<LocationPage>
   final Map<String, List<Map<String, dynamic>>> _locations = {
     'Mumbai': [
       {
-        'name': 'Acer Exclusive Store - Andheri',
-        'address': 'Shop No. 7, Link Road, Andheri West',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': 'Shop no 18, Rizvi building, Milan Subway, Rizvi Nagar, MSEB Colony, Santacruz (West), Mumbai, Maharashtra 400054',
         'type': 'shop',
-        'lat': 19.1367,
-        'lng': 72.8296,
+        'lat': 19.05227,
+        'lng': 72.85184,
         'phone': '+91 9876543210',
       },
       {
         'name': 'Acer Service Center - Malad',
-        'address': '1st Floor, Mall Plaza, Malad West',
+        'address': 'Shop 204, Inorbit Mall, Malad West, Mumbai 400064',
         'type': 'service',
-        'lat': 19.1859,
-        'lng': 72.8484,
-        'phone': '+91 9876543211',
+        'lat': 19.1890,
+        'lng': 72.8347,
+        'phone': '+91 22 6789 1235',
       },
       {
         'name': 'Acer Premium Store - Bandra',
-        'address': 'Shop 12, Linking Road, Bandra West',
+        'address': 'G-18, Palladium Mall, High Street Phoenix, Lower Parel, Mumbai 400013',
         'type': 'shop',
-        'lat': 19.0596,
-        'lng': 72.8295,
-        'phone': '+91 9876543299',
+        'lat': 19.0136,
+        'lng': 72.8320,
+        'phone': '+91 22 6789 1236',
       },
       {
         'name': 'Acer Service Hub - Powai',
-        'address': 'Hiranandani Gardens, Powai',
+        'address': 'Office 301, Hiranandani Business Park, Powai, Mumbai 400076',
         'type': 'service',
-        'lat': 19.1201,
-        'lng': 72.9085,
-        'phone': '+91 9876543201',
+        'lat': 19.1197,
+        'lng': 72.9073,
+        'phone': '+91 22 6789 1237',
       },
     ],
     'Delhi': [
       {
         'name': 'Acer Store - Connaught Place',
-        'address': 'Block A, Connaught Place',
+        'address': 'Shop 15, Block A, Connaught Place, New Delhi 110001',
         'type': 'shop',
-        'lat': 28.6289,
-        'lng': 77.2065,
-        'phone': '+91 9876543212',
+        'lat': 28.6315,
+        'lng': 77.2167,
+        'phone': '+91 11 4567 8901',
       },
       {
         'name': 'Acer Service Hub - Nehru Place',
-        'address': 'Ground Floor, Nehru Place',
+        'address': 'Unit 108, Nehru Place Market, New Delhi 110019',
         'type': 'service',
-        'lat': 28.5483,
-        'lng': 77.2513,
-        'phone': '+91 9876543213',
+        'lat': 28.5494,
+        'lng': 77.2519,
+        'phone': '+91 11 4567 8902',
       },
       {
         'name': 'Acer Exclusive Store - Saket',
-        'address': 'Select Citywalk Mall, Saket District Centre',
+        'address': 'LG-25, Select City Walk Mall, Saket District Centre, New Delhi 110017',
         'type': 'shop',
-        'lat': 28.5273,
-        'lng': 77.2207,
-        'phone': '+91 9876543313',
+        'lat': 28.5245,
+        'lng': 77.2066,
+        'phone': '+91 11 4567 8903',
       },
       {
         'name': 'Acer Service Center - Rajouri Garden',
-        'address': 'J-Block, Rajouri Garden',
+        'address': 'B-24, Rajouri Garden Main Market, New Delhi 110027',
         'type': 'service',
-        'lat': 28.6479,
-        'lng': 77.1173,
-        'phone': '+91 9876543214',
+        'lat': 28.6466,
+        'lng': 77.1207,
+        'phone': '+91 11 4567 8904',
       },
     ],
     'Bangalore': [
       {
         'name': 'Acer Mall Store - MG Road',
-        'address': 'Shop 12, MG Road Mall',
+        'address': 'UB City Mall, Level 2, Vittal Mallya Road, Bangalore 560001',
         'type': 'shop',
-        'lat': 12.9716,
-        'lng': 77.6189,
-        'phone': '+91 9876543214',
+        'lat': 12.9722,
+        'lng': 77.6191,
+        'phone': '+91 80 2345 6789',
       },
       {
         'name': 'Acer Care - Koramangala',
-        'address': '5th Block, Koramangala',
+        'address': 'Forum Mall, 5th Block, Koramangala, Bangalore 560095',
         'type': 'service',
-        'lat': 12.9279,
-        'lng': 77.6271,
-        'phone': '+91 9876543215',
+        'lat': 12.9320,
+        'lng': 77.6139,
+        'phone': '+91 80 2345 6790',
       },
       {
         'name': 'Acer Premium Store - Indiranagar',
-        'address': '100 Feet Road, Indiranagar',
+        'address': '1216, 100 Feet Road, Indiranagar, Bangalore 560038',
         'type': 'shop',
-        'lat': 12.9784,
-        'lng': 77.6408,
-        'phone': '+91 9876543255',
+        'lat': 12.9719,
+        'lng': 77.6412,
+        'phone': '+91 80 2345 6791',
       },
       {
         'name': 'Acer Service Hub - Whitefield',
-        'address': 'Phoenix Marketcity, Whitefield',
+        'address': 'Phoenix Marketcity, Mahadevapura, Whitefield, Bangalore 560048',
         'type': 'service',
         'lat': 12.9973,
-        'lng': 77.7270,
-        'phone': '+91 9876543256',
+        'lng': 77.6957,
+        'phone': '+91 80 2345 6792',
       },
     ],
     'Chennai': [
       {
         'name': 'Acer Exclusive Store - T Nagar',
-        'address': 'North Usman Road, T Nagar',
+        'address': '45, North Usman Road, T Nagar, Chennai 600017',
         'type': 'shop',
-        'lat': 13.0418,
-        'lng': 80.2341,
-        'phone': '+91 9876543216',
+        'lat': 13.0434,
+        'lng': 80.2340,
+        'phone': '+91 44 3456 7890',
       },
       {
         'name': 'Acer Service Center - Anna Nagar',
-        'address': '2nd Avenue, Anna Nagar',
+        'address': 'No. 12, 2nd Avenue, Anna Nagar, Chennai 600040',
         'type': 'service',
-        'lat': 13.0850,
-        'lng': 80.2101,
-        'phone': '+91 9876543217',
+        'lat': 13.0827,
+        'lng': 80.2076,
+        'phone': '+91 44 3456 7891',
       },
       {
         'name': 'Acer Premium Store - Velachery',
-        'address': 'Phoenix Market City, Velachery',
+        'address': 'Phoenix MarketCity, Level 2, Velachery, Chennai 600042',
         'type': 'shop',
-        'lat': 12.9794,
-        'lng': 80.2173,
-        'phone': '+91 9876543218',
+        'lat': 12.9815,
+        'lng': 80.2207,
+        'phone': '+91 44 3456 7892',
       },
     ],
     'Hyderabad': [
       {
         'name': 'Acer Mall Store - Banjara Hills',
-        'address': 'Road No. 12, Banjara Hills',
+        'address': 'GVK One Mall, Road No. 12, Banjara Hills, Hyderabad 500034',
         'type': 'shop',
-        'lat': 17.4156,
-        'lng': 78.4347,
-        'phone': '+91 9876543219',
+        'lat': 17.4239,
+        'lng': 78.4738,
+        'phone': '+91 40 4567 8901',
       },
       {
         'name': 'Acer Service Hub - Hitech City',
-        'address': 'HITEC City Main Road, Madhapur',
+        'address': 'Cyber Gateway, Plot 12-19, HITEC City, Madhapur, Hyderabad 500081',
         'type': 'service',
-        'lat': 17.4450,
-        'lng': 78.3811,
-        'phone': '+91 9876543220',
+        'lat': 17.4485,
+        'lng': 78.3908,
+        'phone': '+91 40 4567 8902',
       },
       {
         'name': 'Acer Exclusive Store - Jubilee Hills',
-        'address': 'Road No. 36, Jubilee Hills',
+        'address': 'The Forum Sujana Mall, Road No. 36, Jubilee Hills, Hyderabad 500033',
         'type': 'shop',
-        'lat': 17.4279,
-        'lng': 78.4069,
-        'phone': '+91 9876543221',
+        'lat': 17.4241,
+        'lng': 78.4480,
+        'phone': '+91 40 4567 8903',
       },
     ],
     'Kolkata': [
       {
         'name': 'Acer Store - Park Street',
-        'address': 'Park Street, Kolkata',
+        'address': 'Forum Mall, 10/3 Elgin Road, Park Street, Kolkata 700020',
         'type': 'shop',
-        'lat': 22.5515,
-        'lng': 88.3525,
-        'phone': '+91 9876543222',
+        'lat': 22.5448,
+        'lng': 88.3426,
+        'phone': '+91 33 5678 9012',
       },
       {
         'name': 'Acer Service Center - Salt Lake',
-        'address': 'Sector V, Salt Lake City',
+        'address': 'City Centre Salt Lake, DC Block, Sector I, Salt Lake City, Kolkata 700064',
         'type': 'service',
-        'lat': 22.5697,
-        'lng': 88.4332,
-        'phone': '+91 9876543223',
+        'lat': 22.5744,
+        'lng': 88.4248,
+        'phone': '+91 33 5678 9013',
       },
     ],
     'Pune': [
       {
         'name': 'Acer Premium Store - Koregaon Park',
-        'address': 'North Main Road, Koregaon Park',
+        'address': 'Phoenix MarketCity, Viman Nagar, Pune 411014',
         'type': 'shop',
-        'lat': 18.5362,
-        'lng': 73.8939,
-        'phone': '+91 9876543224',
+        'lat': 18.5679,
+        'lng': 73.9143,
+        'phone': '+91 20 6789 0123',
       },
       {
         'name': 'Acer Service Hub - Aundh',
-        'address': 'DP Road, Aundh',
+        'address': 'Westend Mall, Aundh IT Park, Aundh, Pune 411007',
         'type': 'service',
-        'lat': 18.5589,
-        'lng': 73.8078,
-        'phone': '+91 9876543225',
+        'lat': 18.5584,
+        'lng': 73.7731,
+        'phone': '+91 20 6789 0124',
       },
     ],
     'Ahmedabad': [
@@ -1196,7 +1197,7 @@ class _LocationPageState extends State<LocationPage>
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            icon: const Icon(Icons.directions),
+                            icon: const Icon(Icons.directions, color: Colors.white),
                             label: const Text('Directions'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: acerPrimaryColor,
@@ -1212,7 +1213,7 @@ class _LocationPageState extends State<LocationPage>
                         const SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton.icon(
-                            icon: const Icon(Icons.phone),
+                            icon: const Icon(Icons.phone, color: Colors.white),
                             label: const Text('Call'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: acerAccentColor,
@@ -1283,17 +1284,145 @@ class _LocationPageState extends State<LocationPage>
     );
   }
 
-  void _launchMaps(Map<String, dynamic> location) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text('Maps would open directions to ${location['name']}')),
-    );
+  void _launchMaps(Map<String, dynamic> location) async {
+    final double lat = location['lat'];
+    final double lng = location['lng'];
+    final String name = location['name'];
+    
+    // Create Google Maps URL with directions
+    final String googleMapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination_place_id=$name';
+    
+    // Alternative URLs for different map apps
+    final String appleMapsUrl = 'https://maps.apple.com/?daddr=$lat,$lng&dirflg=d';
+    final String universalMapsUrl = 'geo:$lat,$lng?q=$lat,$lng($name)';
+    
+    try {
+      // Try to launch Google Maps first
+      if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+        await launchUrl(
+          Uri.parse(googleMapsUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      } 
+      // Fallback to Apple Maps (iOS)
+      else if (await canLaunchUrl(Uri.parse(appleMapsUrl))) {
+        await launchUrl(
+          Uri.parse(appleMapsUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      }
+      // Fallback to universal geo URL
+      else if (await canLaunchUrl(Uri.parse(universalMapsUrl))) {
+        await launchUrl(
+          Uri.parse(universalMapsUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      }
+      else {
+        // If no maps app is available, show error
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text('No maps application found on this device'),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.red[600],
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              margin: const EdgeInsets.all(16),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Handle any errors
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('Could not open maps: ${e.toString()}'),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    }
   }
 
-  void _launchPhone(String phone) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Calling $phone')),
-    );
+  void _launchPhone(String phone) async {
+    final String phoneUrl = 'tel:$phone';
+    
+    try {
+      if (await canLaunchUrl(Uri.parse(phoneUrl))) {
+        await launchUrl(
+          Uri.parse(phoneUrl),
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text('Cannot make phone calls on this device'),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.red[600],
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              margin: const EdgeInsets.all(16),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('Could not make call: ${e.toString()}'),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red[600],
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -1535,6 +1664,7 @@ class LocationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isStore = location['type'] == 'shop';
     final Color primaryColor = isStore ? acerPrimaryColor : acerAccentColor;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Material(
       color: Colors.transparent,
@@ -1543,7 +1673,7 @@ class LocationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Ink(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDarkMode ? Theme.of(context).cardColor : Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
@@ -1583,7 +1713,7 @@ class LocationCard extends StatelessWidget {
                         children: [
                           Text(
                             location['name'],
-                            style: const TextStyle(
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -1591,8 +1721,7 @@ class LocationCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             location['address'],
-                            style: TextStyle(
-                              color: Colors.grey[600],
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontSize: 14,
                             ),
                           ),
@@ -1622,7 +1751,7 @@ class LocationCard extends StatelessWidget {
                     // Chevron
                     Icon(
                       Icons.chevron_right,
-                      color: Colors.grey[400],
+                      color: isDarkMode ? Colors.grey[400] : Colors.grey[400],
                     ),
                   ],
                 ),
@@ -1638,14 +1767,14 @@ class LocationCard extends StatelessWidget {
                         Icon(
                           Icons.access_time,
                           size: 14,
-                          color: Colors.grey[500],
+                          color: isDarkMode ? Colors.grey[300] : Colors.grey[500],
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '10 AM - 8 PM',
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey[500],
+                            color: isDarkMode ? Colors.grey[300] : Colors.grey[500],
                           ),
                         ),
                       ],

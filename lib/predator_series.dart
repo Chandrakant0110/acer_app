@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class PredatorSeries extends StatelessWidget {
+  const PredatorSeries({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -1,8 +1,6 @@
 import 'package:acer_app/help_support.dart';
 import 'package:flutter/material.dart';
 import 'main.dart';
-import 'dart:ui';
-import 'invoice_viewer.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   final Order order;
@@ -939,14 +937,10 @@ class OrderDetailsPage extends StatelessWidget {
                       label: 'Invoice',
                       color: Colors.blue.shade700,
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const InvoiceViewer(
-                              pdfAssetPath:
-                                  'assets/invoice/Invoice ORD38472391.pdf',
-                              invoiceNumber: 'ORD38472391',
-                            ),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Invoice downloaded successfully'),
+                            behavior: SnackBarBehavior.floating,
                           ),
                         );
                       },
