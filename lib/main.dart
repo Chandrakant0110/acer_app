@@ -28,7 +28,11 @@ import 'checkout_page.dart'
     as new_checkout; 
 import 'providers/theme_provider.dart'; 
 import 'theme/app_theme.dart'; 
-import 'beautiful_cart_page.dart'; 
+import 'beautiful_cart_page.dart';
+import 'predator_series.dart';
+import 'swift_series.dart';
+import 'aspire_series.dart';
+import 'beautiful_product_details.dart'; 
 
 // Define Acer brand colors
 const Color acerPrimaryColor = Color(0xFF83B81A); // Acer green
@@ -2122,7 +2126,7 @@ class _CategoryPageState extends State<CategoryPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ProductDetailsPage(product: product),
+                  builder: (context) => BeautifulProductDetails(product: product),
                 ),
               );
             },
@@ -5283,18 +5287,21 @@ class HomeContent extends StatelessWidget {
                     'Ultimate Gaming Experience',
                     acerSecondaryColor,
                     'https://sm.pcmag.com/t/pcmag_au/review/a/acer-preda/acer-predator-triton-700_un4c.1200.png',
+                    const PredatorSeries(),
                   ),
                   _buildBanner(
                     'Swift Series',
                     'Ultra-thin, Ultra-powerful',
                     acerAccentColor,
                     'https://images.unsplash.com/photo-1618424181497-157f25b6ddd5?q=80&w=3000',
+                    const SwiftSeries(),
                   ),
                   _buildBanner(
                     'Aspire Series',
                     'Everyday Productivity',
                     acerPrimaryColor,
                     'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?q=80&w=3000',
+                    const AspireSeries(),
                   ),
                 ],
               ),
@@ -5430,7 +5437,7 @@ class HomeContent extends StatelessWidget {
   }
 
   Widget _buildBanner(
-      String title, String subtitle, Color color, String imageUrl) {
+      String title, String subtitle, Color color, String imageUrl, Widget navigationPage) {
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 20, 12, 12),
       decoration: BoxDecoration(
@@ -5573,8 +5580,16 @@ class HomeContent extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: ElevatedButton(
-                          onPressed: () {},
+                        child: Builder(
+                          builder: (context) => ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => navigationPage,
+                                ),
+                              );
+                            },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                             foregroundColor: color,
@@ -5597,6 +5612,7 @@ class HomeContent extends StatelessWidget {
                               SizedBox(width: 6),
                               Icon(Icons.arrow_forward, size: 16),
                             ],
+                          ),
                           ),
                         ),
                       ),
@@ -6043,7 +6059,7 @@ class HomeContent extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDetailsPage(product: product),
+            builder: (context) => BeautifulProductDetails(product: product),
           ),
         );
       },

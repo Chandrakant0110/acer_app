@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'main.dart';
+import 'beautiful_product_details.dart';
 
 class AllProductsPage extends StatefulWidget {
   const AllProductsPage({super.key});
@@ -346,7 +347,7 @@ class _AllProductsPageState extends State<AllProductsPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => ProductDetailsPage(product: product),
+            builder: (context) => BeautifulProductDetails(product: product),
           ),
         );
       },
