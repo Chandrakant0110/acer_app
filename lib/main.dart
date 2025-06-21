@@ -1,5 +1,6 @@
 import 'package:acer_app/order_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'package:provider/provider.dart';
@@ -2413,7 +2414,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                     ),
                   );
                 },
-              ),
+              ),      
               // Share button
               IconButton(
                 icon: const Icon(Icons.share, color: Colors.white),
@@ -4311,6 +4312,103 @@ class _SignupPageState extends State<SignupPage>
     super.dispose();
   }
 
+  bool _isValidIndianPhoneNumber(String phone) {
+    // Check if the phone number is exactly 10 digits
+    if (phone.length != 10) {
+      return false;
+    }
+    
+    // Check if all characters are digits
+    if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+      return false;
+    }
+    
+    // Check if the first digit is valid for Indian mobile numbers (6, 7, 8, or 9)
+    if (!['6', '7', '8', '9'].contains(phone[0])) {
+      return false;
+    }
+    
+    return true;
+  }
+
+  Widget _buildPhoneInputField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputAction textInputAction = TextInputAction.next,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: TextField(
+        controller: controller,
+        keyboardType: TextInputType.phone,
+        textInputAction: textInputAction,
+        style: TextStyle(color: Colors.grey[800]),
+        maxLength: 10,
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(10),
+          _IndianPhoneNumberFormatter(),
+        ],
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 14,
+          ),
+          prefixIcon: Icon(
+            icon,
+            color: acerPrimaryColor.withOpacity(0.7),
+            size: 20,
+          ),
+          
+          counterText: '',
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: Colors.grey[300]!,
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: acerPrimaryColor,
+              width: 1.5,
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 1.5,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 2,
+            ),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        ),
+      ),
+    );
+  }
+
   void _signup() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -4322,6 +4420,21 @@ class _SignupPageState extends State<SignupPage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text('Please fill all fields'),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      );
+      return;
+    }
+
+    // Validate phone number
+    if (!_isValidIndianPhoneNumber(phone)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9'),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
@@ -4739,11 +4852,10 @@ class _SignupPageState extends State<SignupPage>
                   offset: Offset(0, 20 * (1 - value)),
                   child: Opacity(
                     opacity: value,
-                    child: _buildInputField(
+                    child: _buildPhoneInputField(
                       controller: _phoneController,
                       label: 'Phone Number',
                       icon: Icons.phone_outlined,
-                      keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.next,
                     ),
                   ),
@@ -5001,6 +5113,34 @@ class _SignupPageState extends State<SignupPage>
           contentPadding: const EdgeInsets.symmetric(vertical: 16),
         ),
       ),
+    );
+  }
+}
+
+// Custom Indian phone number formatter
+class _IndianPhoneNumberFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Only allow digits
+    final digitsOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    
+    // Limit to 10 digits
+    if (digitsOnly.length > 10) {
+      return oldValue;
+    }
+    
+    // Check if first digit is valid for Indian mobile numbers (6-9)
+    if (digitsOnly.isNotEmpty && 
+        !['6', '7', '8', '9'].contains(digitsOnly[0])) {
+      return oldValue;
+    }
+    
+    return TextEditingValue(
+      text: digitsOnly,
+      selection: TextSelection.collapsed(offset: digitsOnly.length),
     );
   }
 }

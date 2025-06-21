@@ -618,7 +618,7 @@ class _EditProfilePageState extends State<EditProfilePage>
                                             child: Container(
                                               padding: const EdgeInsets.all(12),
                                               decoration: BoxDecoration(
-                                                gradient: LinearGradient(
+                                                gradient: const LinearGradient(
                                                   colors: [acerAccentColor, acerPrimaryColor],
                                                 ),
                                                 shape: BoxShape.circle,
@@ -715,7 +715,7 @@ class _EditProfilePageState extends State<EditProfilePage>
                               height: 56,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(28),
-                                gradient: LinearGradient(
+                                gradient: const LinearGradient(
                                   colors: [acerPrimaryColor, acerAccentColor],
                                 ),
                                 boxShadow: [

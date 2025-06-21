@@ -1323,10 +1323,10 @@ class _LocationPageState extends State<LocationPage>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
+              content: const Row(
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.white),
-                  const SizedBox(width: 12),
+                  Icon(Icons.error_outline, color: Colors.white),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text('No maps application found on this device'),
                   ),
@@ -1381,10 +1381,10 @@ class _LocationPageState extends State<LocationPage>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Row(
+              content: const Row(
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.white),
-                  const SizedBox(width: 12),
+                  Icon(Icons.error_outline, color: Colors.white),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text('Cannot make phone calls on this device'),
                   ),

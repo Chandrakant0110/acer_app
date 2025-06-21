@@ -450,7 +450,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                 ),
                 child: Text(
                   widget.product.category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: acerPrimaryColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
@@ -482,9 +482,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                 ),
               ),
               const Spacer(),
-              Icon(Icons.verified, color: acerPrimaryColor, size: 16),
+              const Icon(Icons.verified, color: acerPrimaryColor, size: 16),
               const SizedBox(width: 4),
-              Text(
+              const Text(
                 'Verified Product',
                 style: TextStyle(
                   color: acerPrimaryColor,
@@ -552,11 +552,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                   ],
                 ),
                 const Spacer(),
-                Column(
+                const Column(
                   children: [
                     Icon(Icons.local_shipping, color: acerPrimaryColor),
-                    const SizedBox(height: 4),
-                    const Text(
+                    SizedBox(height: 4),
+                    Text(
                       'Free Delivery',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
@@ -583,7 +583,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
             child: Container(
               height: 56,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
+                gradient: const LinearGradient(
                   colors: [acerPrimaryColor, acerAccentColor],
                 ),
                 borderRadius: BorderRadius.circular(16),
@@ -854,7 +854,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(Icons.check_circle, color: acerPrimaryColor, size: 20),
+          const Icon(Icons.check_circle, color: acerPrimaryColor, size: 20),
           const SizedBox(width: 12),
           Text(
             item,
@@ -1049,7 +1049,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
             child: LinearProgressIndicator(
               value: percentage / 100,
               backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(acerPrimaryColor),
+              valueColor: const AlwaysStoppedAnimation<Color>(acerPrimaryColor),
             ),
           ),
           const SizedBox(width: 8),
@@ -1099,7 +1099,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                               color: acerPrimaryColor.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
+                            child: const Text(
                               'Verified',
                               style: TextStyle(
                                 color: acerPrimaryColor,
