@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'main.dart';
 import 'checkout_page.dart' as new_checkout;
 
@@ -100,6 +102,7 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
     );
 
     _setupProductData();
+    _loadSavedReviews();
     _scrollController.addListener(_scrollListener);
     
     // Start animations
@@ -258,27 +261,57 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
     }
   }
 
+  Future<void> _loadSavedReviews() async {
+    final prefs = await SharedPreferences.getInstance();
+    final reviewsKey = 'reviews_${widget.product.name}';
+    final savedReviews = prefs.getString(reviewsKey);
+    
+    if (savedReviews != null) {
+      try {
+        final List<dynamic> decodedReviews = jsonDecode(savedReviews);
+        setState(() {
+          _reviews.addAll(decodedReviews.map((review) => Map<String, dynamic>.from(review)));
+        });
+      } catch (e) {
+        print('Error loading reviews: $e');
+      }
+    }
+  }
+
+  Future<void> _saveReviews() async {
+    final prefs = await SharedPreferences.getInstance();
+    final reviewsKey = 'reviews_${widget.product.name}';
+    final userReviews = _reviews.where((review) => review['isUserReview'] == true).toList();
+    await prefs.setString(reviewsKey, jsonEncode(userReviews));
+  }
+
   void _addNewReview(int rating, String comment) {
+    final user = Provider.of<UserProvider>(context, listen: false).currentUser;
     final newReview = {
-      'name': 'You',
-      'avatar': 'https://randomuser.me/api/portraits/men/1.jpg',
+      'name': user?.name ?? 'You',
+      'avatar': user?.imageUrl ?? 'https://randomuser.me/api/portraits/men/1.jpg',
       'rating': rating,
       'date': 'Just now',
       'verified': true,
       'comment': comment,
       'helpful': 0,
+      'helpfulUsers': <String>[],
       'images': [],
       'replies': <Map<String, dynamic>>[],
+      'isUserReview': true,
+      'reviewId': DateTime.now().millisecondsSinceEpoch.toString(),
     };
     
     setState(() {
       _reviews.insert(0, newReview);
     });
+    _saveReviews();
   }
 
   void _addReplyToReview(String reviewerName, String replyText) {
+    final user = Provider.of<UserProvider>(context, listen: false).currentUser;
     final newReply = {
-      'name': 'You',
+      'name': user?.name ?? 'You',
       'comment': replyText,
       'date': 'Just now',
     };
@@ -294,6 +327,68 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
         }
       }
     });
+    _saveReviews();
+  }
+
+  void _deleteReview(String reviewId) {
+    setState(() {
+      _reviews.removeWhere((review) => review['reviewId'] == reviewId);
+    });
+    _saveReviews();
+  }
+
+  void _editReview(String reviewId, int newRating, String newComment) {
+    setState(() {
+      for (var review in _reviews) {
+        if (review['reviewId'] == reviewId) {
+          review['rating'] = newRating;
+          review['comment'] = newComment;
+          review['date'] = 'Edited just now';
+          break;
+        }
+      }
+    });
+    _saveReviews();
+  }
+
+  void _toggleHelpful(String reviewId) {
+    final user = Provider.of<UserProvider>(context, listen: false).currentUser;
+    final userId = user?.email ?? 'anonymous';
+    
+    setState(() {
+      for (var review in _reviews) {
+        if (review['reviewId'] == reviewId) {
+          if (review['helpfulUsers'] == null) {
+            review['helpfulUsers'] = <String>[];
+          }
+          
+          List<String> helpfulUsers = List<String>.from(review['helpfulUsers']);
+          if (helpfulUsers.contains(userId)) {
+            helpfulUsers.remove(userId);
+          } else {
+            helpfulUsers.add(userId);
+          }
+          
+          review['helpfulUsers'] = helpfulUsers;
+          review['helpful'] = helpfulUsers.length;
+          break;
+        }
+      }
+    });
+  }
+
+  double _calculateAverageRating() {
+    if (_reviews.isEmpty) return 0.0;
+    double sum = _reviews.fold(0.0, (sum, review) => sum + review['rating']);
+    return sum / _reviews.length;
+  }
+
+  Map<int, int> _getRatingDistribution() {
+    Map<int, int> distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+    for (var review in _reviews) {
+      distribution[review['rating']] = (distribution[review['rating']] ?? 0) + 1;
+    }
+    return distribution;
   }
 
   @override
@@ -1079,9 +1174,9 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
               children: [
                 Column(
                   children: [
-                    const Text(
-                      '4.8',
-                      style: TextStyle(
+                    Text(
+                      _calculateAverageRating().toStringAsFixed(1),
+                      style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
                         color: acerPrimaryColor,
@@ -1089,8 +1184,10 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
                     ),
                     Row(
                       children: List.generate(5, (index) {
+                        double avgRating = _calculateAverageRating();
                         return Icon(
-                          index < 4 ? Icons.star : Icons.star_border,
+                          index < avgRating.floor() ? Icons.star : 
+                          index < avgRating ? Icons.star_half : Icons.star_border,
                           color: Colors.amber,
                           size: 20,
                         );
@@ -1109,11 +1206,8 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
                 Expanded(
                   child: Column(
                     children: [
-                      _buildRatingBar(5, 70),
-                      _buildRatingBar(4, 20),
-                      _buildRatingBar(3, 7),
-                      _buildRatingBar(2, 2),
-                      _buildRatingBar(1, 1),
+                      for (int i = 5; i >= 1; i--)
+                        _buildRatingBar(i, _getRatingDistribution()),
                     ],
                   ),
                 ),
@@ -1130,7 +1224,11 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
     );
   }
 
-  Widget _buildRatingBar(int stars, int percentage) {
+  Widget _buildRatingBar(int stars, Map<int, int> distribution) {
+    int count = distribution[stars] ?? 0;
+    int total = _reviews.length;
+    double percentage = total > 0 ? (count / total) * 100 : 0;
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -1139,13 +1237,13 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
           const SizedBox(width: 8),
           Expanded(
             child: LinearProgressIndicator(
-              value: percentage / 100,
+              value: total > 0 ? count / total : 0,
               backgroundColor: Colors.grey[300],
               valueColor: const AlwaysStoppedAnimation<Color>(acerPrimaryColor),
             ),
           ),
           const SizedBox(width: 8),
-          Text('$percentage%', style: const TextStyle(fontSize: 12)),
+          Text('${percentage.toStringAsFixed(0)}%', style: const TextStyle(fontSize: 12)),
         ],
       ),
     );
@@ -1265,14 +1363,28 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
           const SizedBox(height: 12),
           Row(
             children: [
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.thumb_up_outlined, size: 16),
-                label: Text('Helpful (${review['helpful']})'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.grey[600],
-                  padding: EdgeInsets.zero,
-                ),
+              Consumer<UserProvider>(
+                builder: (context, userProvider, child) {
+                  final user = userProvider.currentUser;
+                  final userId = user?.email ?? 'anonymous';
+                  bool isHelpful = review['helpfulUsers']?.contains(userId) ?? false;
+                  
+                  return TextButton.icon(
+                    onPressed: () {
+                      _toggleHelpful(review['reviewId'] ?? '');
+                    },
+                    icon: Icon(
+                      isHelpful ? Icons.thumb_up : Icons.thumb_up_outlined, 
+                      size: 16,
+                      color: isHelpful ? acerPrimaryColor : Colors.grey[600],
+                    ),
+                    label: Text('Helpful (${review['helpful'] ?? 0})'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: isHelpful ? acerPrimaryColor : Colors.grey[600],
+                      padding: EdgeInsets.zero,
+                    ),
+                  );
+                },
               ),
               const SizedBox(width: 16),
               TextButton(
@@ -1285,6 +1397,31 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
                   padding: EdgeInsets.zero,
                 ),
               ),
+              // Show edit and delete buttons only for user's own reviews
+              if (review['isUserReview'] == true) ...[
+                const SizedBox(width: 16),
+                TextButton(
+                  onPressed: () {
+                    _showEditReviewDialog(review);
+                  },
+                  child: const Text('Edit'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.blue,
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                TextButton(
+                  onPressed: () {
+                    _showDeleteConfirmDialog(review['reviewId']);
+                  },
+                  child: const Text('Delete'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
             ],
           ),
           
@@ -1489,6 +1626,117 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
                 backgroundColor: acerPrimaryColor,
               ),
               child: const Text('Post Reply', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Method to show edit review dialog
+  void _showEditReviewDialog(Map<String, dynamic> review) {
+    int selectedRating = review['rating'];
+    TextEditingController editController = TextEditingController(text: review['comment']);
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Edit Review'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        const Text('Rating: '),
+                        ...List.generate(5, (index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setDialogState(() {
+                                selectedRating = index + 1;
+                              });
+                            },
+                            child: Icon(
+                              index < selectedRating ? Icons.star : Icons.star_border,
+                              color: acerPrimaryColor,
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: editController,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        hintText: 'Edit your review...',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (editController.text.trim().isNotEmpty) {
+                      _editReview(review['reviewId'], selectedRating, editController.text.trim());
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Review updated successfully!'),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: acerPrimaryColor,
+                  ),
+                  child: const Text('Update Review', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Method to show delete confirmation dialog
+  void _showDeleteConfirmDialog(String reviewId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Review'),
+          content: const Text('Are you sure you want to delete this review? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _deleteReview(reviewId);
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Review deleted successfully!'),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const Text('Delete', style: TextStyle(color: Colors.white)),
             ),
           ],
         );
