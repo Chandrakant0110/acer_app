@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/notification_provider.dart';
+import '../location_page.dart';
 
 // Define Acer brand colors locally
 const Color acerPrimaryColor = Color(0xFF83B81A); // Acer green
@@ -316,12 +317,10 @@ class _NotificationsPageState extends State<NotificationsPage>
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                // Navigate to locations page
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Finding nearest service centers...'),
-                    duration: Duration(seconds: 2),
-                  ),
+                // Navigate to store locator page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LocationPage()),
                 );
               },
               style: ElevatedButton.styleFrom(

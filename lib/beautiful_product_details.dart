@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:ui';
 import 'main.dart';
+import 'checkout_page.dart' as new_checkout;
 
 class BeautifulProductDetails extends StatefulWidget {
   final Product product;
@@ -35,7 +35,8 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
   late Map<String, Map<String, String>> _specifications;
 
   // Enhanced reviews with more realistic data
-  final List<Map<String, dynamic>> _reviews = [
+  // ignore: prefer_final_fields
+  List<Map<String, dynamic>> _reviews = [
     {
       'name': 'Arjun Malhotra',
       'avatar': 'https://randomuser.me/api/portraits/men/32.jpg',
@@ -255,6 +256,44 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
         },
       };
     }
+  }
+
+  void _addNewReview(int rating, String comment) {
+    final newReview = {
+      'name': 'You',
+      'avatar': 'https://randomuser.me/api/portraits/men/1.jpg',
+      'rating': rating,
+      'date': 'Just now',
+      'verified': true,
+      'comment': comment,
+      'helpful': 0,
+      'images': [],
+      'replies': <Map<String, dynamic>>[],
+    };
+    
+    setState(() {
+      _reviews.insert(0, newReview);
+    });
+  }
+
+  void _addReplyToReview(String reviewerName, String replyText) {
+    final newReply = {
+      'name': 'You',
+      'comment': replyText,
+      'date': 'Just now',
+    };
+    
+    setState(() {
+      for (var review in _reviews) {
+        if (review['name'] == reviewerName) {
+          if (review['replies'] == null) {
+            review['replies'] = <Map<String, dynamic>>[];
+          }
+          review['replies'].add(newReply);
+          break;
+        }
+      }
+    });
   }
 
   @override
@@ -682,7 +721,17 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
               ),
               child: ElevatedButton(
                 onPressed: () {
-                  // Buy now functionality
+                  // Create a temporary cart with just this product for buy now
+                  final Map<Product, int> buyNowItems = {widget.product: 1};
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: (context) => new_checkout.CheckoutPage(
+                        cartItems: buyNowItems,
+                        totalAmount: widget.product.price,
+                      )
+                    )
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -1238,6 +1287,66 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
               ),
             ],
           ),
+          
+          // Display replies
+          if (review['replies'] != null && review['replies'].isNotEmpty)
+            Container(
+              margin: const EdgeInsets.only(top: 12, left: 20),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Replies (${review['replies'].length})',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: acerPrimaryColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...review['replies'].map<Widget>((reply) {
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                reply['name'],
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                reply['date'],
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            reply['comment'],
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -1267,58 +1376,76 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
 
   // Method to show write review dialog
   void _showWriteReviewDialog() {
+    int selectedRating = 5;
+    TextEditingController reviewController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Write a Review'),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Write a Review'),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Rating: '),
-                    ...List.generate(5, (index) {
-                      return const Icon(
-                        Icons.star_border,
-                        color: acerPrimaryColor,
-                      );
-                    }),
+                    Row(
+                      children: [
+                        const Text('Rating: '),
+                        ...List.generate(5, (index) {
+                          return GestureDetector(
+                            onTap: () {
+                              setDialogState(() {
+                                selectedRating = index + 1;
+                              });
+                            },
+                            child: Icon(
+                              index < selectedRating ? Icons.star : Icons.star_border,
+                              color: acerPrimaryColor,
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: reviewController,
+                      maxLines: 4,
+                      decoration: const InputDecoration(
+                        hintText: 'Share your experience with this product...',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                const TextField(
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText: 'Share your experience with this product...',
-                    border: OutlineInputBorder(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    if (reviewController.text.trim().isNotEmpty) {
+                      _addNewReview(selectedRating, reviewController.text.trim());
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Thank you for your review!'),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: acerPrimaryColor,
                   ),
+                  child: const Text('Submit Review', style: TextStyle(color: Colors.white)),
                 ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Thank you for your review!'),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: acerPrimaryColor,
-              ),
-              child: const Text('Submit Review', style: TextStyle(color: Colors.white)),
-            ),
-          ],
+            );
+          },
         );
       },
     );
@@ -1326,14 +1453,17 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
 
   // Method to show reply dialog
   void _showReplyDialog(String reviewerName) {
+    TextEditingController replyController = TextEditingController();
+    
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Reply to $reviewerName'),
-          content: const TextField(
+          content: TextField(
+            controller: replyController,
             maxLines: 3,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               hintText: 'Write your reply...',
               border: OutlineInputBorder(),
             ),
@@ -1345,12 +1475,15 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Reply posted successfully!'),
-                  ),
-                );
+                if (replyController.text.trim().isNotEmpty) {
+                  _addReplyToReview(reviewerName, replyController.text.trim());
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Reply posted successfully!'),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: acerPrimaryColor,
