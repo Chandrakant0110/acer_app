@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'dart:async';
+import '../services/local_notification_service.dart';
 
 // Essential notification types only
-enum NotificationType { welcome, order, service }
+enum NotificationType { welcome, order, service, cart, discount }
 
 class NotificationItem {
   final String id;
@@ -83,6 +84,9 @@ class NotificationsProvider extends ChangeNotifier {
     _prefs = await SharedPreferences.getInstance();
     await _loadNotifications();
     _startServiceReminderTimer();
+    
+    // Initialize local notifications
+    await LocalNotificationService.initialize();
   }
 
   // Load notifications from SharedPreferences
@@ -159,6 +163,9 @@ class NotificationsProvider extends ChangeNotifier {
       isRead: false,
     );
     addNotification(welcomeNotification);
+    
+    // Show local notification
+    LocalNotificationService.showWelcomeNotification(userName: userName);
   }
 
   // Add order notification when user places an order
@@ -197,6 +204,14 @@ class NotificationsProvider extends ChangeNotifier {
       isRead: false,
     );
     addNotification(orderNotification);
+    
+    // Show local notification
+    LocalNotificationService.showOrderNotification(
+      orderId: orderId,
+      title: title,
+      body: body,
+      status: status,
+    );
   }
 
   // Start monthly service reminder timer
@@ -235,6 +250,45 @@ class NotificationsProvider extends ChangeNotifier {
     );
     addNotification(serviceNotification);
     _prefs?.setString('last_service_reminder', DateTime.now().toIso8601String());
+    
+    // Show local notification
+    LocalNotificationService.showServiceReminderNotification();
+  }
+
+  // Add cart reminder notification
+  void addCartReminderNotification({
+    required String title,
+    required String body,
+    required int itemCount,
+    required double totalAmount,
+  }) {
+    final cartNotification = NotificationItem(
+      id: 'cart_${DateTime.now().millisecondsSinceEpoch}',
+      title: title,
+      body: body,
+      timestamp: DateTime.now(),
+      type: NotificationType.cart,
+      isRead: false,
+    );
+    addNotification(cartNotification);
+  }
+
+  // Add discount notification
+  void addDiscountNotification({
+    required String productName,
+    required int discountPercent,
+    required double originalPrice,
+    required double discountPrice,
+  }) {
+    final discountNotification = NotificationItem(
+      id: 'discount_${productName}_${DateTime.now().millisecondsSinceEpoch}',
+      title: '$discountPercent% OFF on $productName! 🔥',
+      body: 'Was ₹${originalPrice.toStringAsFixed(0)}, now only ₹${discountPrice.toStringAsFixed(0)}. Limited time offer!',
+      timestamp: DateTime.now(),
+      type: NotificationType.discount,
+      isRead: false,
+    );
+    addNotification(discountNotification);
   }
 
   @override

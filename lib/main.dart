@@ -31,6 +31,7 @@ import 'providers/theme_provider.dart';
 import 'theme/app_theme.dart'; 
 import 'beautiful_cart_page.dart';
 import 'providers/notification_provider.dart' as providers;
+import 'services/local_notification_service.dart';
 import 'pages/notifications_page.dart' as pages;
 import 'predator_series.dart';
 import 'swift_series.dart';
@@ -4951,6 +4952,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize local notifications
+  await LocalNotificationService.initialize();
 
   // Get shared preferences instance
   final prefs = await SharedPreferences.getInstance();

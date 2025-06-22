@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'main.dart';
 import 'pages/my_orders_page.dart';
 import 'address_managment.dart' as addr_mgmt;
+import 'providers/notification_provider.dart';
 
 // Placeholder for HomePage if needed
 
@@ -2455,6 +2456,10 @@ class _CheckoutPageState extends State<CheckoutPage>
         final orderProvider =
             Provider.of<OrderProvider>(context, listen: false);
         orderProvider.addOrder(newOrder);
+
+        // Add order notification
+        final notificationProvider = Provider.of<NotificationsProvider>(context, listen: false);
+        notificationProvider.addOrderNotification(orderId, 'placed', totalWithTax);
 
         // Clear cart
         final cartProvider = Provider.of<CartProvider>(context, listen: false);

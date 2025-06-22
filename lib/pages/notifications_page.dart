@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/notification_provider.dart';
+import '../providers/order_provider.dart';
 import '../location_page.dart';
+import '../order_details_page.dart';
 
 // Define Acer brand colors locally
 const Color acerPrimaryColor = Color(0xFF83B81A); // Acer green
@@ -278,19 +280,121 @@ class _NotificationsPageState extends State<NotificationsPage>
         Navigator.pop(context);
         break;
       case NotificationType.order:
-        // Navigate to order details
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Opening order details...'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        // Extract order ID from notification ID and navigate to order details
+        _navigateToOrderDetails(notification);
         break;
       case NotificationType.service:
         // Navigate to service booking
         _showServiceDialog();
         break;
+      case NotificationType.cart:
+        // Navigate to cart page
+        _navigateToCart();
+        break;
+      case NotificationType.discount:
+        // Show discount details or navigate to product
+        _showDiscountDialog(notification);
+        break;
     }
+  }
+
+  void _navigateToOrderDetails(NotificationItem notification) {
+    try {
+      // Extract order ID from notification ID (format: 'order_${orderId}_${timestamp}')
+      final notificationIdParts = notification.id.split('_');
+      if (notificationIdParts.length >= 3 && notificationIdParts[0] == 'order') {
+        final orderId = notificationIdParts[1];
+        
+        // Get the order from OrderProvider
+        final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+        final order = orderProvider.getOrderById(orderId);
+        
+        if (order != null) {
+          // Navigate to order details page
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OrderDetailsPage(order: order),
+            ),
+          );
+        } else {
+          // Order not found, show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Order not found. It may have been removed.'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      } else {
+        // Invalid notification ID format
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unable to open order details.'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      // Handle any errors
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error opening order details.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _navigateToCart() {
+    Navigator.pop(context); // Close notifications page
+    // You may need to adjust this based on your navigation structure
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Opening cart...'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showDiscountDialog(NotificationItem notification) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            notification.title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: Text(notification.body),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Later',
+                style: TextStyle(color: Colors.grey[600]),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // Navigate to product or cart
+                _navigateToCart();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: acerPrimaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Shop Now'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showServiceDialog() {
@@ -346,6 +450,10 @@ class _NotificationsPageState extends State<NotificationsPage>
         return Icons.shopping_bag_outlined;
       case NotificationType.service:
         return Icons.build_outlined;
+      case NotificationType.cart:
+        return Icons.shopping_cart_outlined;
+      case NotificationType.discount:
+        return Icons.local_offer_outlined;
     }
   }
 
@@ -357,6 +465,10 @@ class _NotificationsPageState extends State<NotificationsPage>
         return Colors.blue;
       case NotificationType.service:
         return Colors.orange;
+      case NotificationType.cart:
+        return Colors.purple;
+      case NotificationType.discount:
+        return Colors.red;
     }
   }
 
