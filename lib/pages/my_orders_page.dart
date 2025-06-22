@@ -18,6 +18,12 @@ class _MyOrdersPageState extends State<MyOrdersPage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    
+    // Update all orders with time-based status progression when page loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+      orderProvider.updateAllOrdersStatus();
+    });
   }
 
   @override
@@ -179,37 +185,11 @@ class OrderCardWidget extends StatelessWidget {
     required this.isActive,
   }) : super(key: key);
 
-  // Calculate real-time order status based on order date
-  OrderStatus getTimeBasedStatus(Order order) {
-    // If order is already cancelled or returned, keep that status
-    if (order.status == OrderStatus.cancelled || order.status == OrderStatus.returned) {
-      return order.status;
-    }
-
-    final now = DateTime.now();
-    final orderDate = order.orderDate;
-    final difference = now.difference(orderDate);
-
-    // Time-based status progression
-    if (difference.inMinutes < 30) {
-      return OrderStatus.pending; // First 30 minutes: Order is pending
-    } else if (difference.inHours < 2) {
-      return OrderStatus.confirmed; // 30 mins - 2 hours: Order is confirmed
-    } else if (difference.inHours < 24) {
-      return OrderStatus.processing; // 2 - 24 hours: Order is being processed
-    } else if (difference.inHours < 72) {
-      return OrderStatus.shipped; // 24 - 72 hours: Order is shipped
-    } else if (difference.inHours < 96) {
-      return OrderStatus.outForDelivery; // 72 - 96 hours: Out for delivery
-    } else {
-      return OrderStatus.delivered; // After 96 hours (4 days): Delivered
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Use time-based status instead of static status
-    final calculatedStatus = getTimeBasedStatus(order);
+    // Get the order provider to access the calculated status
+    final orderProvider = Provider.of<OrderProvider>(context, listen: false);
+    final calculatedStatus = orderProvider.getTimeBasedStatus(order);
     final statusColor = _getStatusColor(calculatedStatus);
     final formattedDate = _formatDate(order.orderDate);
     final statusLabel = calculatedStatus.toString().split('.').last.toUpperCase();

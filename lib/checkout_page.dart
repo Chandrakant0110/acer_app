@@ -2455,14 +2455,28 @@ class _CheckoutPageState extends State<CheckoutPage>
       try {
         final orderProvider =
             Provider.of<OrderProvider>(context, listen: false);
+        final cartProvider = Provider.of<CartProvider>(context, listen: false);
+        
         orderProvider.addOrder(newOrder);
 
         // Add order notification
         final notificationProvider = Provider.of<NotificationsProvider>(context, listen: false);
-        notificationProvider.addOrderNotification(orderId, 'placed', totalWithTax);
+        notificationProvider.addOrderNotification(
+          orderId, 
+          'placed', 
+          totalWithTax,
+          itemCount: cartProvider.itemCount,
+        );
+
+        // Add special order confirmation notification
+        notificationProvider.addOrderConfirmationNotification(
+          orderId: orderId,
+          totalAmount: totalWithTax,
+          itemCount: cartProvider.itemCount,
+          deliveryDate: _calculateDeliveryDate(),
+        );
 
         // Clear cart
-        final cartProvider = Provider.of<CartProvider>(context, listen: false);
         cartProvider.clearCart();
 
         // Show success dialog
@@ -2709,6 +2723,11 @@ class _CheckoutPageState extends State<CheckoutPage>
     ];
 
     return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  String _calculateDeliveryDate() {
+    final deliveryDate = DateTime.now().add(const Duration(days: 5));
+    return _formatDate(deliveryDate);
   }
 }
 

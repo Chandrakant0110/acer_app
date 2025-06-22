@@ -153,7 +153,7 @@ class NotificationsProvider extends ChangeNotifier {
   }
 
   // Add welcome notification when user signs up
-  void addWelcomeNotification(String userName) {
+  void addWelcomeNotification(String userName, {String? userEmail}) {
     final welcomeNotification = NotificationItem(
       id: 'welcome_${DateTime.now().millisecondsSinceEpoch}',
       title: 'Welcome to Acer Store! 👋',
@@ -164,12 +164,31 @@ class NotificationsProvider extends ChangeNotifier {
     );
     addNotification(welcomeNotification);
     
-    // Show local notification
+    // Show enhanced local notification for welcome
     LocalNotificationService.showWelcomeNotification(userName: userName);
   }
 
+  // Add sign-up welcome notification with enhanced features
+  void addSignUpWelcomeNotification(String userName, {String? userEmail}) {
+    final signUpNotification = NotificationItem(
+      id: 'signup_welcome_${DateTime.now().millisecondsSinceEpoch}',
+      title: 'Welcome aboard, $userName! 🚀',
+      body: 'Discover premium Acer laptops, monitors, and accessories. Your perfect tech companion awaits!',
+      timestamp: DateTime.now(),
+      type: NotificationType.welcome,
+      isRead: false,
+    );
+    addNotification(signUpNotification);
+    
+    // Show enhanced sign-up notification
+    LocalNotificationService.showSignUpWelcomeNotification(
+      userName: userName,
+      userEmail: userEmail,
+    );
+  }
+
   // Add order notification when user places an order
-  void addOrderNotification(String orderId, String status, double amount) {
+  void addOrderNotification(String orderId, String status, double amount, {int? itemCount}) {
     String title;
     String body;
 
@@ -205,12 +224,40 @@ class NotificationsProvider extends ChangeNotifier {
     );
     addNotification(orderNotification);
     
-    // Show local notification
+    // Show enhanced local notification
     LocalNotificationService.showOrderNotification(
       orderId: orderId,
       title: title,
       body: body,
       status: status,
+      totalAmount: amount,
+      itemCount: itemCount,
+    );
+  }
+
+  // Add special order confirmation notification
+  void addOrderConfirmationNotification({
+    required String orderId,
+    required double totalAmount,
+    required int itemCount,
+    String? deliveryDate,
+  }) {
+    final confirmationNotification = NotificationItem(
+      id: 'order_confirmed_${orderId}_${DateTime.now().millisecondsSinceEpoch}',
+      title: '🎉 Order Confirmed Successfully!',
+      body: 'Thank you for your order! Your $itemCount items worth ₹${totalAmount.toStringAsFixed(0)} have been confirmed.',
+      timestamp: DateTime.now(),
+      type: NotificationType.order,
+      isRead: false,
+    );
+    addNotification(confirmationNotification);
+    
+    // Show special order confirmation notification
+    LocalNotificationService.showOrderConfirmedNotification(
+      orderId: orderId,
+      totalAmount: totalAmount,
+      itemCount: itemCount,
+      deliveryDate: deliveryDate,
     );
   }
 

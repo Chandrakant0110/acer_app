@@ -6874,6 +6874,91 @@ class OrderProvider extends ChangeNotifier {
       estimatedDelivery: DateTime.now().add(const Duration(days: 2)),
     ));
   }
+
+  // Calculate time-based status for an order
+  OrderStatus getTimeBasedStatus(Order order) {
+    // If order is already cancelled or returned, keep that status
+    if (order.status == OrderStatus.cancelled || order.status == OrderStatus.returned) {
+      return order.status;
+    }
+
+    final now = DateTime.now();
+    final orderDate = order.orderDate;
+    final difference = now.difference(orderDate);
+
+    // Time-based status progression
+    if (difference.inMinutes < 30) {
+      return OrderStatus.pending; // First 30 minutes: Order is pending
+    } else if (difference.inHours < 2) {
+      return OrderStatus.confirmed; // 30 mins - 2 hours: Order is confirmed
+    } else if (difference.inHours < 24) {
+      return OrderStatus.processing; // 2 - 24 hours: Order is being processed
+    } else if (difference.inHours < 72) {
+      return OrderStatus.shipped; // 24 - 72 hours: Order is shipped
+    } else if (difference.inHours < 96) {
+      return OrderStatus.outForDelivery; // 72 - 96 hours: Out for delivery
+    } else {
+      return OrderStatus.delivered; // After 96 hours (4 days): Delivered
+    }
+  }
+
+  // Update all orders with time-based status progression
+  void updateAllOrdersStatus() {
+    bool hasChanges = false;
+    
+    for (int i = 0; i < _orders.length; i++) {
+      final currentOrder = _orders[i];
+      final calculatedStatus = getTimeBasedStatus(currentOrder);
+      
+      // Only update if the calculated status is different from current status
+      if (currentOrder.status != calculatedStatus) {
+        // Create new order with updated status
+        final updatedOrder = Order(
+          id: currentOrder.id,
+          items: currentOrder.items,
+          totalAmount: currentOrder.totalAmount,
+          orderDate: currentOrder.orderDate,
+          status: calculatedStatus,
+          deliveryAddress: currentOrder.deliveryAddress,
+          paymentMethod: currentOrder.paymentMethod,
+          trackingId: currentOrder.trackingId,
+          estimatedDelivery: currentOrder.estimatedDelivery,
+        );
+        
+        _orders[i] = updatedOrder;
+        hasChanges = true;
+      }
+    }
+    
+    if (hasChanges) {
+      notifyListeners();
+      print('Updated order statuses based on time progression');
+    }
+  }
+
+  // Update specific order status
+  void updateOrderStatus(String orderId, OrderStatus newStatus) {
+    final orderIndex = _orders.indexWhere((order) => order.id == orderId);
+    if (orderIndex != -1) {
+      final oldOrder = _orders[orderIndex];
+      // Create new order with updated status
+      final updatedOrder = Order(
+        id: oldOrder.id,
+        items: oldOrder.items,
+        totalAmount: oldOrder.totalAmount,
+        orderDate: oldOrder.orderDate,
+        status: newStatus,
+        deliveryAddress: oldOrder.deliveryAddress,
+        paymentMethod: oldOrder.paymentMethod,
+        trackingId: oldOrder.trackingId,
+        estimatedDelivery: oldOrder.estimatedDelivery,
+      );
+      
+      _orders[orderIndex] = updatedOrder;
+      notifyListeners();
+      print('Updated order ${orderId} status to ${newStatus}');
+    }
+  }
 }
 
 // Add CheckoutPage after CartPage class
@@ -7577,7 +7662,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
       // Add order notification
       final notificationProvider = Provider.of<providers.NotificationsProvider>(context, listen: false);
-      notificationProvider.addOrderNotification(orderId, 'placed', totalWithTax);
+      notificationProvider.addOrderNotification(orderId, 'placed', totalWithTax, itemCount: orderItems.length);
 
       // Clear cart
       final cartProvider = Provider.of<CartProvider>(context, listen: false);

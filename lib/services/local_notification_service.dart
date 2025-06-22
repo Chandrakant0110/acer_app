@@ -83,9 +83,41 @@ class LocalNotificationService {
     required String title,
     required String body,
     String? status,
+    double? totalAmount,
+    int? itemCount,
   }) async {
     if (!_isInitialized) {
       await initialize();
+    }
+
+    // Determine notification style based on status
+    String summaryText = 'Order #$orderId';
+    if (totalAmount != null && itemCount != null) {
+      summaryText = '$itemCount items • ₹${totalAmount.toStringAsFixed(0)}';
+    }
+
+    List<AndroidNotificationAction> actions = [];
+    if (status?.toLowerCase() == 'confirmed') {
+      actions = [
+        AndroidNotificationAction(
+          'track_order',
+          'Track Order',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'view_details',
+          'View Details',
+          showsUserInterface: true,
+        ),
+      ];
+    } else {
+      actions = [
+        AndroidNotificationAction(
+          'view_order',
+          'View Order',
+          showsUserInterface: true,
+        ),
+      ];
     }
 
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
@@ -99,6 +131,15 @@ class LocalNotificationService {
       color: Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
+      styleInformation: BigTextStyleInformation(
+        body,
+        htmlFormatBigText: true,
+        contentTitle: title,
+        htmlFormatContentTitle: true,
+        summaryText: summaryText,
+        htmlFormatSummaryText: true,
+      ),
+      actions: actions,
     );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -106,10 +147,16 @@ class LocalNotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      subtitle: 'Acer Store Order Update',
     );
 
-    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
-        LinuxNotificationDetails();
+    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+        LinuxNotificationDetails(
+      actions: actions.map((action) => LinuxNotificationAction(
+        key: action.id,
+        label: action.title,
+      )).toList(),
+    );
 
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -122,7 +169,7 @@ class LocalNotificationService {
       title,
       body,
       platformChannelSpecifics,
-      payload: 'order:$orderId', // Payload to identify the order
+      payload: 'order:$orderId:${status ?? 'update'}', // Enhanced payload
     );
   }
 
@@ -144,6 +191,26 @@ class LocalNotificationService {
       color: Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
+      styleInformation: BigTextStyleInformation(
+        'Hi $userName! Welcome to the Acer family. Start exploring amazing laptops, monitors, and accessories tailored just for you!',
+        htmlFormatBigText: true,
+        contentTitle: 'Welcome to Acer Store! 👋',
+        htmlFormatContentTitle: true,
+        summaryText: 'Your tech journey begins here',
+        htmlFormatSummaryText: true,
+      ),
+      actions: [
+        AndroidNotificationAction(
+          'explore_products',
+          'Explore Products',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'view_offers',
+          'View Offers',
+          showsUserInterface: true,
+        ),
+      ],
     );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -151,10 +218,22 @@ class LocalNotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      subtitle: 'Your tech journey begins here',
     );
 
-    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
-        LinuxNotificationDetails();
+    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+        LinuxNotificationDetails(
+      actions: [
+        LinuxNotificationAction(
+          key: 'explore_products',
+          label: 'Explore Products',
+        ),
+        LinuxNotificationAction(
+          key: 'view_offers',
+          label: 'View Offers',
+        ),
+      ],
+    );
 
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -167,7 +246,7 @@ class LocalNotificationService {
       'Welcome to Acer Store! 👋',
       'Hi $userName! Welcome to the Acer family. Start exploring amazing laptops, monitors, and accessories.',
       platformChannelSpecifics,
-      payload: 'welcome',
+      payload: 'welcome:$userName',
     );
   }
 
@@ -187,6 +266,31 @@ class LocalNotificationService {
       color: Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
+      styleInformation: BigTextStyleInformation(
+        'It\'s been a month since your last service check. Visit your nearest Acer service center to keep your device running smoothly and maintain warranty coverage.',
+        htmlFormatBigText: true,
+        contentTitle: 'Service Reminder 🔧',
+        htmlFormatContentTitle: true,
+        summaryText: 'Keep your Acer device in top condition',
+        htmlFormatSummaryText: true,
+      ),
+      actions: [
+        AndroidNotificationAction(
+          'find_service_center',
+          'Find Service Center',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'schedule_service',
+          'Schedule Service',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'remind_later',
+          'Remind Later',
+          showsUserInterface: false,
+        ),
+      ],
     );
 
     const DarwinNotificationDetails iOSPlatformChannelSpecifics =
@@ -194,10 +298,26 @@ class LocalNotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
+      subtitle: 'Keep your device in top condition',
     );
 
-    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
-        LinuxNotificationDetails();
+    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+        LinuxNotificationDetails(
+      actions: [
+        LinuxNotificationAction(
+          key: 'find_service_center',
+          label: 'Find Service Center',
+        ),
+        LinuxNotificationAction(
+          key: 'schedule_service',
+          label: 'Schedule Service',
+        ),
+        LinuxNotificationAction(
+          key: 'remind_later',
+          label: 'Remind Later',
+        ),
+      ],
+    );
 
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
@@ -210,7 +330,7 @@ class LocalNotificationService {
       'Service Reminder 🔧',
       'It\'s been a month since your last service check. Visit your nearest Acer service center to keep your device running smoothly.',
       platformChannelSpecifics,
-      payload: 'service',
+      payload: 'service:reminder',
     );
   }
 
@@ -458,6 +578,202 @@ class LocalNotificationService {
 
   static Future<void> cancelAllNotifications() async {
     await _notificationsPlugin.cancelAll();
+  }
+
+  static Future<void> showOrderConfirmedNotification({
+    required String orderId,
+    required double totalAmount,
+    required int itemCount,
+    String? deliveryDate,
+  }) async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+
+    String deliveryInfo = deliveryDate != null 
+        ? 'Expected delivery: $deliveryDate'
+        : 'We\'ll keep you updated on delivery';
+
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'order_confirmed',
+      'Order Confirmed',
+      channelDescription: 'Notifications for confirmed orders',
+      importance: Importance.max,
+      priority: Priority.max,
+      icon: '@mipmap/ic_launcher',
+      color: Color(0xFF83B81A), // Acer green color
+      playSound: true,
+      enableVibration: true,
+      styleInformation: BigTextStyleInformation(
+        'Thank you for your order! Your $itemCount items worth ₹${totalAmount.toStringAsFixed(0)} have been confirmed and will be processed shortly. $deliveryInfo',
+        htmlFormatBigText: true,
+        contentTitle: '🎉 Order Confirmed Successfully!',
+        htmlFormatContentTitle: true,
+        summaryText: 'Order #$orderId • $itemCount items • ₹${totalAmount.toStringAsFixed(0)}',
+        htmlFormatSummaryText: true,
+      ),
+      actions: [
+        AndroidNotificationAction(
+          'track_order',
+          'Track Order',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'view_details',
+          'View Details',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'share_order',
+          'Share',
+          showsUserInterface: false,
+        ),
+      ],
+    );
+
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      subtitle: 'Your order is being processed',
+    );
+
+    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+        LinuxNotificationDetails(
+      actions: [
+        LinuxNotificationAction(
+          key: 'track_order',
+          label: 'Track Order',
+        ),
+        LinuxNotificationAction(
+          key: 'view_details',
+          label: 'View Details',
+        ),
+        LinuxNotificationAction(
+          key: 'share_order',
+          label: 'Share',
+        ),
+      ],
+    );
+
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+      linux: linuxPlatformChannelSpecifics,
+    );
+
+    await _notificationsPlugin.show(
+      orderId.hashCode + 1000, // Different ID for confirmation notifications
+      '🎉 Order Confirmed Successfully!',
+      'Thank you for your order! Your $itemCount items worth ₹${totalAmount.toStringAsFixed(0)} have been confirmed.',
+      platformChannelSpecifics,
+      payload: 'order_confirmed:$orderId:$totalAmount:$itemCount',
+    );
+  }
+
+  static Future<void> showSignUpWelcomeNotification({
+    required String userName,
+    String? userEmail,
+  }) async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+
+    final welcomeMessages = [
+      'Welcome aboard, $userName! 🚀',
+      'Hello $userName! Ready to explore? 👋',
+      'Great to have you, $userName! 🎉',
+      'Welcome to Acer, $userName! 💻',
+    ];
+
+    final welcomeBodies = [
+      'Discover premium Acer laptops, monitors, and accessories. Your perfect tech companion awaits!',
+      'Explore our latest collection of gaming laptops, business machines, and cutting-edge monitors.',
+      'Get ready for exclusive deals, early access to new products, and personalized recommendations.',
+      'Join thousands of satisfied customers who trust Acer for their technology needs.',
+    ];
+
+    final randomIndex = DateTime.now().millisecond % welcomeMessages.length;
+
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'signup_welcome',
+      'Sign Up Welcome',
+      channelDescription: 'Welcome notifications for new sign-ups',
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+      color: Color(0xFF83B81A), // Acer green color
+      playSound: true,
+      enableVibration: true,
+      styleInformation: BigTextStyleInformation(
+        '${welcomeBodies[randomIndex]} Start your journey with Acer today and experience innovation at its finest!',
+        htmlFormatBigText: true,
+        contentTitle: welcomeMessages[randomIndex],
+        htmlFormatContentTitle: true,
+        summaryText: 'Welcome to the Acer family!',
+        htmlFormatSummaryText: true,
+      ),
+      actions: [
+        AndroidNotificationAction(
+          'browse_products',
+          'Browse Products',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'view_deals',
+          'View Deals',
+          showsUserInterface: true,
+        ),
+        AndroidNotificationAction(
+          'complete_profile',
+          'Complete Profile',
+          showsUserInterface: true,
+        ),
+      ],
+    );
+
+    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+        DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+      subtitle: 'Welcome to the Acer family!',
+    );
+
+    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+        LinuxNotificationDetails(
+      actions: [
+        LinuxNotificationAction(
+          key: 'browse_products',
+          label: 'Browse Products',
+        ),
+        LinuxNotificationAction(
+          key: 'view_deals',
+          label: 'View Deals',
+        ),
+        LinuxNotificationAction(
+          key: 'complete_profile',
+          label: 'Complete Profile',
+        ),
+      ],
+    );
+
+    final NotificationDetails platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+      iOS: iOSPlatformChannelSpecifics,
+      linux: linuxPlatformChannelSpecifics,
+    );
+
+    await _notificationsPlugin.show(
+      userName.hashCode + 2000, // Unique ID for sign-up notifications
+      welcomeMessages[randomIndex],
+      welcomeBodies[randomIndex],
+      platformChannelSpecifics,
+      payload: 'signup_welcome:$userName:${userEmail ?? ''}',
+    );
   }
 
   static Future<void> cancelCartNotifications() async {
