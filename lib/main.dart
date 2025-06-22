@@ -30,6 +30,8 @@ import 'checkout_page.dart'
 import 'providers/theme_provider.dart'; 
 import 'theme/app_theme.dart'; 
 import 'beautiful_cart_page.dart';
+import 'providers/notification_provider.dart' as providers;
+import 'pages/notifications_page.dart' as pages;
 import 'predator_series.dart';
 import 'swift_series.dart';
 import 'aspire_series.dart';
@@ -213,135 +215,7 @@ class UserProvider extends ChangeNotifier {
   }
 }
 
-// Add NotificationsProvider class after UserProvider class
-class NotificationsProvider extends ChangeNotifier {
-  final List<NotificationItem> _notifications = [];
-  bool _hasUnreadNotifications = false;
 
-  NotificationsProvider() {
-    // Adding sample notifications for demo purposes
-    _addSampleNotifications();
-  }
-
-  List<NotificationItem> get notifications => _notifications;
-  bool get hasUnreadNotifications => _hasUnreadNotifications;
-  int get unreadCount => _notifications.where((item) => !item.isRead).length;
-
-  void _addSampleNotifications() {
-    _notifications.addAll([
-      NotificationItem(
-        id: '1',
-        title: 'Exclusive Offer: 10% Off Acer Monitors',
-        body:
-            'Limited time offer on all Acer monitors. Use code ACER15 at checkout.',
-        timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
-        type: NotificationType.offer,
-        isRead: false,
-      ),
-      NotificationItem(
-        id: '2',
-        title: 'New Arrival: Predator Helios 300',
-        body: 'The latest Predator Helios 300 is now available with RTX 4060.',
-        timestamp: DateTime.now().subtract(const Duration(hours: 5)),
-        type: NotificationType.product,
-        isRead: false,
-      ),
-      NotificationItem(
-        id: '3',
-        title: 'Your Order #AC45678 Has Been Shipped',
-        body:
-            'Your order has been shipped and will be delivered in 2-3 business days.',
-        timestamp: DateTime.now().subtract(const Duration(days: 1)),
-        type: NotificationType.order,
-        isRead: true,
-      ),
-      NotificationItem(
-        id: '4',
-        title: 'Service Reminder',
-        body:
-            'Your Acer laptop is due for a service check. Book an appointment now.',
-        timestamp: DateTime.now().subtract(const Duration(days: 3)),
-        type: NotificationType.service,
-        isRead: true,
-      ),
-    ]);
-    _hasUnreadNotifications = true;
-  }
-
-  void markAsRead(String id) {
-    final index =
-        _notifications.indexWhere((notification) => notification.id == id);
-    if (index != -1) {
-      _notifications[index] = _notifications[index].copyWith(isRead: true);
-      _updateUnreadStatus();
-      notifyListeners();
-    }
-  }
-
-  void markAllAsRead() {
-    for (var i = 0; i < _notifications.length; i++) {
-      _notifications[i] = _notifications[i].copyWith(isRead: true);
-    }
-    _hasUnreadNotifications = false;
-    notifyListeners();
-  }
-
-  void removeNotification(String id) {
-    _notifications.removeWhere((notification) => notification.id == id);
-    _updateUnreadStatus();
-    notifyListeners();
-  }
-
-  void _updateUnreadStatus() {
-    _hasUnreadNotifications =
-        _notifications.any((notification) => !notification.isRead);
-  }
-
-  void addNotification(NotificationItem notification) {
-    _notifications.insert(0, notification);
-    _hasUnreadNotifications = true;
-    notifyListeners();
-  }
-}
-
-// Notification Models
-enum NotificationType { offer, product, order, service }
-
-class NotificationItem {
-  final String id;
-  final String title;
-  final String body;
-  final DateTime timestamp;
-  final NotificationType type;
-  final bool isRead;
-
-  NotificationItem({
-    required this.id,
-    required this.title,
-    required this.body,
-    required this.timestamp,
-    required this.type,
-    this.isRead = false,
-  });
-
-  NotificationItem copyWith({
-    String? id,
-    String? title,
-    String? body,
-    DateTime? timestamp,
-    NotificationType? type,
-    bool? isRead,
-  }) {
-    return NotificationItem(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      body: body ?? this.body,
-      timestamp: timestamp ?? this.timestamp,
-      type: type ?? this.type,
-      isRead: isRead ?? this.isRead,
-    );
-  }
-}
 
 
 
@@ -1984,93 +1858,7 @@ class _SettingsPageState extends State<SettingsPage>
   }
 }
 
-class NotificationsPage extends StatelessWidget {
-  const NotificationsPage({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
-      ),
-      body: Consumer<NotificationsProvider>(
-        builder: (context, notificationsProvider, child) {
-          if (notificationsProvider.notifications.isEmpty) {
-            return const Center(
-              child: Text('No notifications'),
-            );
-          }
-
-          return ListView.builder(
-            itemCount: notificationsProvider.notifications.length,
-            itemBuilder: (context, index) {
-              final notification = notificationsProvider.notifications[index];
-              return ListTile(
-                title: Text(notification.title),
-                subtitle: Text(notification.body),
-                leading: Icon(
-                  _getNotificationIcon(notification.type),
-                  color: _getNotificationColor(notification.type),
-                ),
-                trailing: Text(
-                  _formatDate(notification.timestamp),
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  IconData _getNotificationIcon(NotificationType type) {
-    switch (type) {
-      case NotificationType.offer:
-        return Icons.local_offer;
-      case NotificationType.product:
-        return Icons.new_releases;
-      case NotificationType.order:
-        return Icons.shopping_bag;
-      case NotificationType.service:
-        return Icons.build;
-    }
-  }
-
-  Color _getNotificationColor(NotificationType type) {
-    switch (type) {
-      case NotificationType.offer:
-        return Colors.orange;
-      case NotificationType.product:
-        return acerPrimaryColor;
-      case NotificationType.order:
-        return Colors.blue;
-      case NotificationType.service:
-        return Colors.purple;
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec'
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
-  }
-}
 
 class CategoryPage extends StatefulWidget {
   final String category;
@@ -4529,6 +4317,11 @@ class _SignupPageState extends State<SignupPage>
         // Set the user in provider to save in SharedPreferences
         userProvider.setUser(user);
 
+        // Add welcome notification
+        // ignore: use_build_context_synchronously
+        final notificationProvider = Provider.of<providers.NotificationsProvider>(context, listen: false);
+        notificationProvider.addWelcomeNotification(name);
+
         // Show success message
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
@@ -5164,7 +4957,7 @@ void main() async {
                 UserProvider(prefs)), // Pass SharedPreferences for persistence
         ChangeNotifierProvider(create: (context) => CartProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => NotificationsProvider()),
+        ChangeNotifierProvider(create: (context) => providers.NotificationsProvider()),
         ChangeNotifierProvider(
             create: (context) => OrderProvider()), // Add OrderProvider
       ],
@@ -5331,11 +5124,11 @@ class HomeContent extends StatelessWidget {
             },
           ),
           IconButton(
-            icon: Consumer<NotificationsProvider>(
+            icon: Consumer<providers.NotificationsProvider>(
                 builder: (context, notificationsProvider, child) {
               return Badge(
-                isLabelVisible: notificationsProvider.hasUnreadNotifications,
-                label: Text(notificationsProvider.unreadCount.toString()),
+                isLabelVisible: notificationsProvider?.hasUnreadNotifications ?? false,
+                label: Text((notificationsProvider?.unreadCount ?? 0).toString()),
                 child: const Icon(Icons.notifications),
               );
             }),
@@ -5343,7 +5136,7 @@ class HomeContent extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const NotificationsPage(),
+                  builder: (context) => const pages.NotificationsPage(),
                 ),
               );
             },
@@ -7741,6 +7534,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
       // Add to order provider - Force rebuild provider reference to ensure update
       final orderProvider = Provider.of<OrderProvider>(context, listen: false);
       orderProvider.addOrder(newOrder);
+
+      // Add order notification
+      final notificationProvider = Provider.of<providers.NotificationsProvider>(context, listen: false);
+      notificationProvider.addOrderNotification(orderId, 'placed', totalWithTax);
 
       // Clear cart
       final cartProvider = Provider.of<CartProvider>(context, listen: false);
