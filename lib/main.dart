@@ -798,7 +798,7 @@ class _SettingsPageState extends State<SettingsPage>
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _darkMode = prefs.getBool('darkMode') ?? false;
-      _notifications = prefs.getBool('notifications') ?? true;
+      _notifications = prefs.getBool('notificationsEnabled') ?? true;
     });
 
     // Apply theme immediately
@@ -808,7 +808,7 @@ class _SettingsPageState extends State<SettingsPage>
   Future<void> _saveSettings() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', _darkMode);
-    await prefs.setBool('notifications', _notifications);
+    await prefs.setBool('notificationsEnabled', _notifications);
   }
 
   void _applyTheme() async {
