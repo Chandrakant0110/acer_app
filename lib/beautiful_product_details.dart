@@ -1138,21 +1138,25 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
         children: [
           Row(
             children: [
-              const Text(
-                'Customer Reviews',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              const Expanded(
+                child: Text(
+                  'Customer Reviews',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
-              const Spacer(),
               TextButton.icon(
                 onPressed: () {
                   _showWriteReviewDialog();
                 },
-                icon: const Icon(Icons.edit),
-                label: const Text('Write Review'),
+                icon: const Icon(Icons.edit, size: 16),
+                label: const Text('Write Review', style: TextStyle(fontSize: 12)),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                ),
               ),
             ],
           ),
@@ -1361,7 +1365,9 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
             ),
           ],
           const SizedBox(height: 12),
-          Row(
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
             children: [
               Consumer<UserProvider>(
                 builder: (context, userProvider, child) {
@@ -1375,50 +1381,58 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
                     },
                     icon: Icon(
                       isHelpful ? Icons.thumb_up : Icons.thumb_up_outlined, 
-                      size: 16,
+                      size: 14,
                       color: isHelpful ? acerPrimaryColor : Colors.grey[600],
                     ),
-                    label: Text('Helpful (${review['helpful'] ?? 0})'),
+                    label: Text(
+                      'Helpful (${review['helpful'] ?? 0})',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                     style: TextButton.styleFrom(
                       foregroundColor: isHelpful ? acerPrimaryColor : Colors.grey[600],
-                      padding: EdgeInsets.zero,
+                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   );
                 },
               ),
-              const SizedBox(width: 16),
               TextButton(
                 onPressed: () {
                   _showReplyDialog(review['name']);
                 },
-                child: const Text('Reply'),
+                child: const Text('Reply', style: TextStyle(fontSize: 12)),
                 style: TextButton.styleFrom(
                   foregroundColor: acerPrimaryColor,
-                  padding: EdgeInsets.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
               // Show edit and delete buttons only for user's own reviews
               if (review['isUserReview'] == true) ...[
-                const SizedBox(width: 16),
                 TextButton(
                   onPressed: () {
                     _showEditReviewDialog(review);
                   },
-                  child: const Text('Edit'),
+                  child: const Text('Edit', style: TextStyle(fontSize: 12)),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.blue,
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ),
-                const SizedBox(width: 16),
                 TextButton(
                   onPressed: () {
                     _showDeleteConfirmDialog(review['reviewId']);
                   },
-                  child: const Text('Delete'),
+                  child: const Text('Delete', style: TextStyle(fontSize: 12)),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
-                    padding: EdgeInsets.zero,
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                 ),
               ],
@@ -1525,37 +1539,40 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
               title: const Text('Write a Review'),
               content: SizedBox(
                 width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('Rating: '),
-                        ...List.generate(5, (index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setDialogState(() {
-                                selectedRating = index + 1;
-                              });
-                            },
-                            child: Icon(
-                              index < selectedRating ? Icons.star : Icons.star_border,
-                              color: acerPrimaryColor,
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: reviewController,
-                      maxLines: 4,
-                      decoration: const InputDecoration(
-                        hintText: 'Share your experience with this product...',
-                        border: OutlineInputBorder(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          const Text('Rating: '),
+                          ...List.generate(5, (index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setDialogState(() {
+                                  selectedRating = index + 1;
+                                });
+                              },
+                              child: Icon(
+                                index < selectedRating ? Icons.star : Icons.star_border,
+                                color: acerPrimaryColor,
+                                size: 20,
+                              ),
+                            );
+                          }),
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: reviewController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          hintText: 'Share your experience with this product...',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               actions: [
@@ -1647,37 +1664,40 @@ class _BeautifulProductDetailsState extends State<BeautifulProductDetails>
               title: const Text('Edit Review'),
               content: SizedBox(
                 width: double.maxFinite,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('Rating: '),
-                        ...List.generate(5, (index) {
-                          return GestureDetector(
-                            onTap: () {
-                              setDialogState(() {
-                                selectedRating = index + 1;
-                              });
-                            },
-                            child: Icon(
-                              index < selectedRating ? Icons.star : Icons.star_border,
-                              color: acerPrimaryColor,
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: editController,
-                      maxLines: 4,
-                      decoration: const InputDecoration(
-                        hintText: 'Edit your review...',
-                        border: OutlineInputBorder(),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          const Text('Rating: '),
+                          ...List.generate(5, (index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setDialogState(() {
+                                  selectedRating = index + 1;
+                                });
+                              },
+                              child: Icon(
+                                index < selectedRating ? Icons.star : Icons.star_border,
+                                color: acerPrimaryColor,
+                                size: 20,
+                              ),
+                            );
+                          }),
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: editController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          hintText: 'Edit your review...',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               actions: [

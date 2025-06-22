@@ -3132,25 +3132,31 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                             const SizedBox(width: 12),
 
                             // User name and date
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  review['name'],
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    review['name'],
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Posted on ${review['date']}',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey[600],
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Posted on ${review['date']}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             const Spacer(),
 
@@ -5078,8 +5084,55 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
   const HomeContent({Key? key}) : super(key: key);
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  late PageController _pageController;
+  Timer? _bannerTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _startBannerTimer();
+  }
+
+  @override
+  void dispose() {
+    _bannerTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _startBannerTimer() {
+    _bannerTimer = Timer.periodic(const Duration(seconds: 6), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      
+      if (_pageController.hasClients) {
+        final currentPage = _pageController.page?.round() ?? 0;
+        if (currentPage == 2) {
+          _pageController.animateToPage(
+            0,
+            duration: const Duration(milliseconds: 1200),
+            curve: Curves.easeInOutCubic,
+          );
+        } else {
+          _pageController.nextPage(
+            duration: const Duration(milliseconds: 1200),
+            curve: Curves.easeInOutCubic,
+          );
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -5159,25 +5212,6 @@ class HomeContent extends StatelessWidget {
   }
 
   Widget _buildBannerSlider() {
-    final PageController pageController = PageController();
-
-    // Auto-scroll timer
-    Timer.periodic(const Duration(seconds: 6), (timer) {
-      if (pageController.hasClients) {
-        if (pageController.page?.round() == 2) {
-          pageController.animateToPage(
-            0,
-            duration: const Duration(milliseconds: 1200),
-            curve: Curves.easeInOutCubic,
-          );
-        } else {
-          pageController.nextPage(
-            duration: const Duration(milliseconds: 1200),
-            curve: Curves.easeInOutCubic,
-          );
-        }
-      }
-    });
 
     return Column(
       children: [
@@ -5213,7 +5247,7 @@ class HomeContent extends StatelessWidget {
               ),
 
               PageView(
-                controller: pageController,
+                controller: _pageController,
                 children: [
                   _buildBanner(
                     'Predator Series',
@@ -5246,7 +5280,7 @@ class HomeContent extends StatelessWidget {
                 right: 0,
                 child: Center(
                   child: SmoothPageIndicator(
-                    controller: pageController,
+                    controller: _pageController,
                     count: 3,
                     effect: CustomizableEffect(
                       activeDotDecoration: DotDecoration(
@@ -5802,13 +5836,13 @@ class HomeContent extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Improved icon container
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.2),
                       shape: BoxShape.circle,
@@ -5827,18 +5861,18 @@ class HomeContent extends StatelessWidget {
                     ),
                     child: Icon(
                       icon,
-                      size: 32,
+                      size: 28,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   // Improved text styling
                   Text(
                     title,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: 15,
+                      fontSize: 14,
                       shadows: [
                         Shadow(
                           color: Colors.black26,
@@ -5848,10 +5882,12 @@ class HomeContent extends StatelessWidget {
                       ],
                     ),
                     textAlign: TextAlign.center,
+                    maxLines: 2, // Add max lines to prevent overflow
+                    overflow: TextOverflow.ellipsis,
                   ),
                   // Subtle indicator
                   Container(
-                    margin: const EdgeInsets.only(top: 6),
+                    margin: const EdgeInsets.only(top: 4),
                     height: 2,
                     width: 30,
                     decoration: BoxDecoration(
@@ -7054,7 +7090,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            Wrap(
                               children: [
                                 Text(
                                   address.name,
@@ -7066,7 +7102,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 const SizedBox(width: 8),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
+                                    horizontal: 6,
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
@@ -7076,7 +7112,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   child: Text(
                                     address.addressType ?? 'Home',
                                     style: TextStyle(
-                                      fontSize: 12,
+                                      fontSize: 11,
                                       color: Colors.grey[800],
                                     ),
                                   ),
@@ -7085,7 +7121,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                   const SizedBox(width: 8),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
+                                      horizontal: 6,
                                       vertical: 2,
                                     ),
                                     decoration: BoxDecoration(
@@ -7095,7 +7131,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     child: const Text(
                                       'Default',
                                       style: TextStyle(
-                                        fontSize: 12,
+                                        fontSize: 11,
                                         color: acerPrimaryColor,
                                       ),
                                     ),

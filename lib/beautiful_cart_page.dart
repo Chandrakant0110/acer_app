@@ -569,18 +569,17 @@ class _BeautifulCartPageState extends State<BeautifulCartPage>
                       
                       const SizedBox(height: 16),
                       
-                      Row(
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
                         children: [
                           // Professional Quantity Controls
                           _buildProfessionalQuantityControls(product, quantity, cart),
-                          
-                          const Spacer(),
                           
                           // Remove Button
                           GestureDetector(
                             onTap: () => _removeItemWithAnimation(product, cart),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               decoration: BoxDecoration(
                                 color: Colors.red.withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(10),
@@ -591,15 +590,15 @@ class _BeautifulCartPageState extends State<BeautifulCartPage>
                                 children: [
                                   Icon(
                                     Icons.delete_outline,
-                                    size: 16,
+                                    size: 14,
                                     color: Colors.red[600],
                                   ),
-                                  const SizedBox(width: 6),
+                                  const SizedBox(width: 4),
                                   Text(
                                     'Remove',
                                     style: TextStyle(
                                       color: Colors.red[600],
-                                      fontSize: 13,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
