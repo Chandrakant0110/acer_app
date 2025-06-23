@@ -1333,7 +1333,7 @@ class _LocationPageState extends State<LocationPage>
                 ],
               ),
               backgroundColor: Colors.red[600],
-              behavior: SnackBarBehavior.floating,
+
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1357,7 +1357,7 @@ class _LocationPageState extends State<LocationPage>
               ],
             ),
             backgroundColor: Colors.red[600],
-            behavior: SnackBarBehavior.floating,
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -1391,7 +1391,7 @@ class _LocationPageState extends State<LocationPage>
                 ],
               ),
               backgroundColor: Colors.red[600],
-              behavior: SnackBarBehavior.floating,
+
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1414,7 +1414,7 @@ class _LocationPageState extends State<LocationPage>
               ],
             ),
             backgroundColor: Colors.red[600],
-            behavior: SnackBarBehavior.floating,
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

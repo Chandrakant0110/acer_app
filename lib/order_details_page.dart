@@ -253,7 +253,7 @@ class OrderDetailsPage extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Tracking details opened'),
-                          behavior: SnackBarBehavior.floating,
+
                         ),
                       );
                     },
@@ -940,7 +940,7 @@ class OrderDetailsPage extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Invoice downloaded successfully'),
-                            behavior: SnackBarBehavior.floating,
+
                           ),
                         );
                       },
@@ -972,7 +972,7 @@ class OrderDetailsPage extends StatelessWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Write a review'),
-                            behavior: SnackBarBehavior.floating,
+
                           ),
                         );
                       },
@@ -1036,7 +1036,7 @@ class OrderDetailsPage extends StatelessWidget {
                                   const SnackBar(
                                     content:
                                         Text('Order cancelled successfully'),
-                                    behavior: SnackBarBehavior.floating,
+
                                   ),
                                 );
                               },

@@ -3,14 +3,29 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 
 class LocalNotificationService {
-  static final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-
+  static FlutterLocalNotificationsPlugin? _notificationsPlugin;
   static bool _isInitialized = false;
+  static bool _isInitializing = false;
+
+  // Getter to ensure plugin is available
+  static FlutterLocalNotificationsPlugin get _plugin {
+    _notificationsPlugin ??= FlutterLocalNotificationsPlugin();
+    return _notificationsPlugin!;
+  }
 
   static Future<void> initialize() async {
     if (_isInitialized) return;
-
+    if (_isInitializing) {
+      // Wait for initialization to complete
+      while (_isInitializing) {
+        await Future.delayed(const Duration(milliseconds: 50));
+      }
+      return;
+    }
+    
+    _isInitializing = true;
+    
+    try {
     // Initialize the plugin
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -32,7 +47,7 @@ class LocalNotificationService {
       linux: initializationSettingsLinux,
     );
 
-    await _notificationsPlugin.initialize(
+      await _plugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: _onNotificationTap,
     );
@@ -48,10 +63,17 @@ class LocalNotificationService {
     }
 
     _isInitialized = true;
+    } catch (e) {
+      debugPrint('Error initializing LocalNotificationService: $e');
+      // Don't rethrow, just log the error
+    } finally {
+      _isInitializing = false;
+    }
   }
 
   static Future<void> _requestIOSPermissions() async {
-    await _notificationsPlugin
+    try {
+      await _plugin
         .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
@@ -59,14 +81,21 @@ class LocalNotificationService {
           badge: true,
           sound: true,
         );
+    } catch (e) {
+      debugPrint('Error requesting iOS permissions: $e');
+    }
   }
 
   static Future<void> _requestAndroidPermissions() async {
+    try {
     final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-        _notificationsPlugin.resolvePlatformSpecificImplementation<
+          _plugin.resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin>();
 
     await androidImplementation?.requestNotificationsPermission();
+    } catch (e) {
+      debugPrint('Error requesting Android permissions: $e');
+    }
   }
 
   static void _onNotificationTap(NotificationResponse notificationResponse) {
@@ -86,9 +115,15 @@ class LocalNotificationService {
     double? totalAmount,
     int? itemCount,
   }) async {
+    try {
     if (!_isInitialized) {
       await initialize();
     }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping notification');
+        return;
+      }
 
     // Determine notification style based on status
     String summaryText = 'Order #$orderId';
@@ -99,12 +134,12 @@ class LocalNotificationService {
     List<AndroidNotificationAction> actions = [];
     if (status?.toLowerCase() == 'confirmed') {
       actions = [
-        AndroidNotificationAction(
+          const AndroidNotificationAction(
           'track_order',
           'Track Order',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+          const AndroidNotificationAction(
           'view_details',
           'View Details',
           showsUserInterface: true,
@@ -112,7 +147,7 @@ class LocalNotificationService {
       ];
     } else {
       actions = [
-        AndroidNotificationAction(
+          const AndroidNotificationAction(
           'view_order',
           'View Order',
           showsUserInterface: true,
@@ -128,7 +163,7 @@ class LocalNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      color: Color(0xFF83B81A), // Acer green color
+        color: const Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
       styleInformation: BigTextStyleInformation(
@@ -164,21 +199,30 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+      await _plugin.show(
       orderId.hashCode, // Use order ID hash as notification ID
       title,
       body,
       platformChannelSpecifics,
       payload: 'order:$orderId:${status ?? 'update'}', // Enhanced payload
     );
+    } catch (e) {
+      debugPrint('Error showing order notification: $e');
+    }
   }
 
   static Future<void> showWelcomeNotification({
     required String userName,
   }) async {
+    try {
     if (!_isInitialized) {
       await initialize();
     }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping welcome notification');
+        return;
+      }
 
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -188,7 +232,7 @@ class LocalNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      color: Color(0xFF83B81A), // Acer green color
+        color: const Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
       styleInformation: BigTextStyleInformation(
@@ -200,12 +244,12 @@ class LocalNotificationService {
         htmlFormatSummaryText: true,
       ),
       actions: [
-        AndroidNotificationAction(
+          const AndroidNotificationAction(
           'explore_products',
           'Explore Products',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+          const AndroidNotificationAction(
           'view_offers',
           'View Offers',
           showsUserInterface: true,
@@ -221,7 +265,7 @@ class LocalNotificationService {
       subtitle: 'Your tech journey begins here',
     );
 
-    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+      const LinuxNotificationDetails linuxPlatformChannelSpecifics =
         LinuxNotificationDetails(
       actions: [
         LinuxNotificationAction(
@@ -241,21 +285,30 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+      await _plugin.show(
       999, // Fixed ID for welcome notifications
       'Welcome to Acer Store! 👋',
       'Hi $userName! Welcome to the Acer family. Start exploring amazing laptops, monitors, and accessories.',
       platformChannelSpecifics,
       payload: 'welcome:$userName',
     );
+    } catch (e) {
+      debugPrint('Error showing welcome notification: $e');
+    }
   }
 
   static Future<void> showServiceReminderNotification() async {
+    try {
     if (!_isInitialized) {
       await initialize();
     }
 
-    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping service reminder notification');
+        return;
+      }
+
+      const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
       'service_notifications',
       'Service Notifications',
@@ -301,7 +354,7 @@ class LocalNotificationService {
       subtitle: 'Keep your device in top condition',
     );
 
-    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+      const LinuxNotificationDetails linuxPlatformChannelSpecifics =
         LinuxNotificationDetails(
       actions: [
         LinuxNotificationAction(
@@ -325,13 +378,16 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+      await _plugin.show(
       998, // Fixed ID for service notifications
       'Service Reminder 🔧',
       'It\'s been a month since your last service check. Visit your nearest Acer service center to keep your device running smoothly.',
       platformChannelSpecifics,
       payload: 'service:reminder',
     );
+    } catch (e) {
+      debugPrint('Error showing service reminder notification: $e');
+    }
   }
 
   static Future<void> showCartReminderNotification({
@@ -340,9 +396,15 @@ class LocalNotificationService {
     required int itemCount,
     required double totalAmount,
   }) async {
+    try {
     if (!_isInitialized) {
       await initialize();
     }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping cart reminder notification');
+        return;
+      }
 
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -352,7 +414,7 @@ class LocalNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      color: Color(0xFF83B81A), // Acer green color
+      color: const Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
       styleInformation: BigTextStyleInformation(
@@ -364,12 +426,12 @@ class LocalNotificationService {
         htmlFormatSummaryText: true,
       ),
       actions: [
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'view_cart',
           'View Cart',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'dismiss',
           'Later',
           showsUserInterface: false,
@@ -385,7 +447,7 @@ class LocalNotificationService {
       subtitle: 'Great deals waiting for you!',
     );
 
-    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
         LinuxNotificationDetails(
       actions: [
         LinuxNotificationAction(
@@ -405,13 +467,16 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+      await _plugin.show(
       997, // Fixed ID for cart reminders
       title,
       body,
       platformChannelSpecifics,
       payload: 'cart_reminder:$itemCount:$totalAmount',
     );
+    } catch (e) {
+      debugPrint('Error showing cart reminder notification: $e');
+    }
   }
 
   static Future<void> showDiscountNotification({
@@ -420,9 +485,15 @@ class LocalNotificationService {
     required double discountPrice,
     required int discountPercent,
   }) async {
+    try {
     if (!_isInitialized) {
       await initialize();
     }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping discount notification');
+        return;
+      }
 
     final AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
@@ -432,7 +503,7 @@ class LocalNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      color: Color(0xFF83B81A), // Acer green color
+      color: const Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
       styleInformation: BigTextStyleInformation(
@@ -444,12 +515,12 @@ class LocalNotificationService {
         htmlFormatSummaryText: true,
       ),
       actions: [
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'buy_now',
           'Buy Now',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'view_details',
           'View Details',
           showsUserInterface: true,
@@ -465,7 +536,7 @@ class LocalNotificationService {
       subtitle: 'Limited time offer!',
     );
 
-    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
         LinuxNotificationDetails(
       actions: [
         LinuxNotificationAction(
@@ -485,13 +556,16 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+      await _plugin.show(
       996, // Fixed ID for discount notifications
       '$discountPercent% OFF on $productName! 🔥',
       'Was ₹${originalPrice.toStringAsFixed(0)}, now only ₹${discountPrice.toStringAsFixed(0)}. Limited time offer!',
       platformChannelSpecifics,
       payload: 'discount:$productName:$discountPercent',
     );
+    } catch (e) {
+      debugPrint('Error showing discount notification: $e');
+    }
   }
 
   static Future<void> showCartAbandonmentNotification({
@@ -510,7 +584,7 @@ class LocalNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      color: Color(0xFF83B81A), // Acer green color
+      color: const Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
       styleInformation: BigTextStyleInformation(
@@ -522,12 +596,12 @@ class LocalNotificationService {
         htmlFormatSummaryText: true,
       ),
       actions: [
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'complete_purchase',
           'Complete Purchase',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'view_cart',
           'View Cart',
           showsUserInterface: true,
@@ -543,7 +617,7 @@ class LocalNotificationService {
       subtitle: 'Don\'t forget your items!',
     );
 
-    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
         LinuxNotificationDetails(
       actions: [
         LinuxNotificationAction(
@@ -563,7 +637,7 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+    await _plugin.show(
       995, // Fixed ID for cart abandonment
       'Your Cart is Waiting! 🛍️',
       'Complete your purchase of $itemCount items (₹${totalAmount.toStringAsFixed(0)}) and get them delivered to your doorstep!',
@@ -573,11 +647,37 @@ class LocalNotificationService {
   }
 
   static Future<void> cancelNotification(int id) async {
-    await _notificationsPlugin.cancel(id);
+    try {
+      if (!_isInitialized) {
+        await initialize();
+      }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping cancel notification');
+        return;
+      }
+      
+      await _plugin.cancel(id);
+    } catch (e) {
+      debugPrint('Error canceling notification $id: $e');
+    }
   }
 
   static Future<void> cancelAllNotifications() async {
-    await _notificationsPlugin.cancelAll();
+    try {
+      if (!_isInitialized) {
+        await initialize();
+      }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping cancel all notifications');
+        return;
+      }
+      
+      await _plugin.cancelAll();
+    } catch (e) {
+      debugPrint('Error canceling all notifications: $e');
+    }
   }
 
   static Future<void> showOrderConfirmedNotification({
@@ -586,9 +686,15 @@ class LocalNotificationService {
     required int itemCount,
     String? deliveryDate,
   }) async {
+    try {
     if (!_isInitialized) {
       await initialize();
     }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping order confirmation notification');
+        return;
+      }
 
     String deliveryInfo = deliveryDate != null 
         ? 'Expected delivery: $deliveryDate'
@@ -602,7 +708,7 @@ class LocalNotificationService {
       importance: Importance.max,
       priority: Priority.max,
       icon: '@mipmap/ic_launcher',
-      color: Color(0xFF83B81A), // Acer green color
+      color: const Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
       styleInformation: BigTextStyleInformation(
@@ -614,17 +720,17 @@ class LocalNotificationService {
         htmlFormatSummaryText: true,
       ),
       actions: [
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'track_order',
           'Track Order',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'view_details',
           'View Details',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'share_order',
           'Share',
           showsUserInterface: false,
@@ -640,7 +746,7 @@ class LocalNotificationService {
       subtitle: 'Your order is being processed',
     );
 
-    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
         LinuxNotificationDetails(
       actions: [
         LinuxNotificationAction(
@@ -664,22 +770,31 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+      await _plugin.show(
       orderId.hashCode + 1000, // Different ID for confirmation notifications
       '🎉 Order Confirmed Successfully!',
       'Thank you for your order! Your $itemCount items worth ₹${totalAmount.toStringAsFixed(0)} have been confirmed.',
       platformChannelSpecifics,
       payload: 'order_confirmed:$orderId:$totalAmount:$itemCount',
     );
+    } catch (e) {
+      debugPrint('Error showing order confirmation notification: $e');
+    }
   }
 
   static Future<void> showSignUpWelcomeNotification({
     required String userName,
     String? userEmail,
   }) async {
+    try {
     if (!_isInitialized) {
       await initialize();
     }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping sign-up welcome notification');
+        return;
+      }
 
     final welcomeMessages = [
       'Welcome aboard, $userName! 🚀',
@@ -705,7 +820,7 @@ class LocalNotificationService {
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      color: Color(0xFF83B81A), // Acer green color
+      color: const Color(0xFF83B81A), // Acer green color
       playSound: true,
       enableVibration: true,
       styleInformation: BigTextStyleInformation(
@@ -717,17 +832,17 @@ class LocalNotificationService {
         htmlFormatSummaryText: true,
       ),
       actions: [
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'browse_products',
           'Browse Products',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'view_deals',
           'View Deals',
           showsUserInterface: true,
         ),
-        AndroidNotificationAction(
+        const AndroidNotificationAction(
           'complete_profile',
           'Complete Profile',
           showsUserInterface: true,
@@ -743,7 +858,7 @@ class LocalNotificationService {
       subtitle: 'Welcome to the Acer family!',
     );
 
-    final LinuxNotificationDetails linuxPlatformChannelSpecifics =
+    const LinuxNotificationDetails linuxPlatformChannelSpecifics =
         LinuxNotificationDetails(
       actions: [
         LinuxNotificationAction(
@@ -767,19 +882,35 @@ class LocalNotificationService {
       linux: linuxPlatformChannelSpecifics,
     );
 
-    await _notificationsPlugin.show(
+      await _plugin.show(
       userName.hashCode + 2000, // Unique ID for sign-up notifications
       welcomeMessages[randomIndex],
       welcomeBodies[randomIndex],
       platformChannelSpecifics,
       payload: 'signup_welcome:$userName:${userEmail ?? ''}',
     );
+    } catch (e) {
+      debugPrint('Error showing sign-up welcome notification: $e');
+    }
   }
 
   static Future<void> cancelCartNotifications() async {
+    try {
+      if (!_isInitialized) {
+        await initialize();
+      }
+      
+      if (!_isInitialized) {
+        debugPrint('LocalNotificationService not initialized, skipping cancel cart notifications');
+        return;
+      }
+      
     // Cancel cart-related notifications
-    await _notificationsPlugin.cancel(997); // Cart reminders
-    await _notificationsPlugin.cancel(996); // Discount notifications
-    await _notificationsPlugin.cancel(995); // Cart abandonment
+      await _plugin.cancel(997); // Cart reminders
+      await _plugin.cancel(996); // Discount notifications
+      await _plugin.cancel(995); // Cart abandonment
+    } catch (e) {
+      debugPrint('Error canceling cart notifications: $e');
+    }
   }
 } 

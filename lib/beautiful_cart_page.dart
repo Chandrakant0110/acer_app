@@ -792,7 +792,7 @@ class _BeautifulCartPageState extends State<BeautifulCartPage>
                             ],
                           ),
                           backgroundColor: acerPrimaryColor,
-                          behavior: SnackBarBehavior.floating,
+
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -1144,7 +1144,7 @@ class _BeautifulCartPageState extends State<BeautifulCartPage>
           ],
         ),
         duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
+
         backgroundColor: Colors.orange[600],
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

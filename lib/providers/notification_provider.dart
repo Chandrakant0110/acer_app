@@ -86,7 +86,11 @@ class NotificationsProvider extends ChangeNotifier {
     _startServiceReminderTimer();
     
     // Initialize local notifications
+    try {
     await LocalNotificationService.initialize();
+    } catch (e) {
+      debugPrint('Failed to initialize LocalNotificationService in provider: $e');
+    }
   }
 
   // Load notifications from SharedPreferences

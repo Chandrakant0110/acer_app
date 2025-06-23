@@ -434,7 +434,7 @@ class _EditProfilePageState extends State<EditProfilePage>
           ],
         ),
         backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
+
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(16),
       ),
@@ -452,7 +452,7 @@ class _EditProfilePageState extends State<EditProfilePage>
           ],
         ),
         backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
+
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(16),
       ),

@@ -603,7 +603,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
                     SnackBar(
                       content: Text('${widget.product.name} added to cart!'),
                       backgroundColor: acerPrimaryColor,
-                      behavior: SnackBarBehavior.floating,
+
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -1207,7 +1207,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage>
           SnackBar(
             content: Text('${widget.product.name} added to cart!'),
             backgroundColor: acerPrimaryColor,
-            behavior: SnackBarBehavior.floating,
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

@@ -1,4 +1,4 @@
-import 'package:acer_app/order_details_page.dart';
+ import 'package:acer_app/order_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
@@ -27,7 +27,7 @@ import 'address_managment.dart';
 import 'payment_methods.dart';
 import 'checkout_page.dart'
     as new_checkout; 
-import 'providers/theme_provider.dart'; 
+import 'providers/theme_provider.dart';   
 import 'theme/app_theme.dart'; 
 import 'beautiful_cart_page.dart';
 import 'providers/notification_provider.dart' as providers;
@@ -3488,7 +3488,6 @@ class _LoginPageState extends State<LoginPage>
         SnackBar(
           content: const Text('Please enter email and password'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -3504,7 +3503,7 @@ class _LoginPageState extends State<LoginPage>
         SnackBar(
           content: const Text('Please enter a valid email address'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -3569,7 +3568,7 @@ class _LoginPageState extends State<LoginPage>
         SnackBar(
           content: Text(errorMessage),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -3583,7 +3582,7 @@ class _LoginPageState extends State<LoginPage>
         SnackBar(
           content: Text('Error: $e'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4216,7 +4215,7 @@ class _SignupPageState extends State<SignupPage>
         SnackBar(
           content: const Text('Please fill all fields'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4231,7 +4230,7 @@ class _SignupPageState extends State<SignupPage>
         SnackBar(
           content: const Text('Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4247,7 +4246,7 @@ class _SignupPageState extends State<SignupPage>
         SnackBar(
           content: const Text('Please enter a valid email address'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4261,7 +4260,7 @@ class _SignupPageState extends State<SignupPage>
         SnackBar(
           content: const Text('Passwords do not match'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4276,7 +4275,7 @@ class _SignupPageState extends State<SignupPage>
         SnackBar(
           content: const Text('Password must be at least 6 characters long'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4335,7 +4334,7 @@ class _SignupPageState extends State<SignupPage>
           SnackBar(
             content: const Text('Account created successfully!'),
             backgroundColor: acerPrimaryColor,
-            behavior: SnackBarBehavior.floating,
+            
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -4367,7 +4366,7 @@ class _SignupPageState extends State<SignupPage>
         SnackBar(
           content: Text(errorMessage),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4381,7 +4380,7 @@ class _SignupPageState extends State<SignupPage>
         SnackBar(
           content: Text('Error: $e'),
           backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
+          
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
@@ -4954,7 +4953,11 @@ void main() async {
   );
 
   // Initialize local notifications
-  await LocalNotificationService.initialize();
+      try {
+      await LocalNotificationService.initialize();
+    } catch (e) {
+      debugPrint('Failed to initialize LocalNotificationService: $e');
+    }
 
   // Get shared preferences instance
   final prefs = await SharedPreferences.getInstance();
