@@ -372,7 +372,7 @@ class LocalNotificationService {
       ],
     );
 
-    final NotificationDetails platformChannelSpecifics = NotificationDetails(
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: iOSPlatformChannelSpecifics,
       linux: linuxPlatformChannelSpecifics,

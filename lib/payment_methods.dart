@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'services/biometric_auth_service.dart';
+import 'package:local_auth/local_auth.dart';
 
 class PaymentMethod {
   final String id;
@@ -10,8 +12,10 @@ class PaymentMethod {
   final String? cardNumber;
   final String? cardHolderName;
   final String? expiryDate;
+  final String? cvv; // WARNING: Storing CVV is a security risk and not recommended by PCI DSS
   final String? upiId;
   final String? bankName;
+  final String? manualCardType; // Added for manual card type selection
   final bool isDefault;
 
   PaymentMethod({
@@ -21,8 +25,10 @@ class PaymentMethod {
     this.cardNumber,
     this.cardHolderName,
     this.expiryDate,
+    this.cvv, // WARNING: Storing CVV is a security risk and not recommended by PCI DSS
     this.upiId,
     this.bankName,
+    this.manualCardType, // Added for manual card type selection
     this.isDefault = false,
   });
 
@@ -34,8 +40,10 @@ class PaymentMethod {
       'cardNumber': cardNumber,
       'cardHolderName': cardHolderName,
       'expiryDate': expiryDate,
+      'cvv': cvv, // WARNING: Storing CVV violates PCI DSS compliance
       'upiId': upiId,
       'bankName': bankName,
+      'manualCardType': manualCardType, // Added for manual card type selection
       'isDefault': isDefault,
     };
   }
@@ -48,8 +56,10 @@ class PaymentMethod {
       cardNumber: json['cardNumber'],
       cardHolderName: json['cardHolderName'],
       expiryDate: json['expiryDate'],
+      cvv: json['cvv'], // WARNING: Loading stored CVV (security risk)
       upiId: json['upiId'],
       bankName: json['bankName'],
+      manualCardType: json['manualCardType'], // Added for manual card type selection
       isDefault: json['isDefault'] ?? false,
     );
   }
@@ -61,8 +71,10 @@ class PaymentMethod {
     String? cardNumber,
     String? cardHolderName,
     String? expiryDate,
+    String? cvv,
     String? upiId,
     String? bankName,
+    String? manualCardType, // Added for manual card type selection
     bool? isDefault,
   }) {
     return PaymentMethod(
@@ -72,8 +84,10 @@ class PaymentMethod {
       cardNumber: cardNumber ?? this.cardNumber,
       cardHolderName: cardHolderName ?? this.cardHolderName,
       expiryDate: expiryDate ?? this.expiryDate,
+      cvv: cvv ?? this.cvv,
       upiId: upiId ?? this.upiId,
       bankName: bankName ?? this.bankName,
+      manualCardType: manualCardType ?? this.manualCardType, // Added for manual card type selection
       isDefault: isDefault ?? this.isDefault,
     );
   }
@@ -87,8 +101,14 @@ class PaymentMethod {
     return '**** **** **** $lastFour';
   }
 
-  // Returns the card type (Visa, Mastercard, etc.) based on the card number
+  // Returns the card type (Visa, Mastercard, etc.) - prioritizes manual selection over auto-detection
   String get cardType {
+    // If manual card type is selected, use that
+    if (manualCardType != null && manualCardType!.isNotEmpty && manualCardType != 'Auto Detect') {
+      return manualCardType!;
+    }
+
+    // Otherwise, auto-detect from card number
     if (cardNumber == null || cardNumber!.isEmpty) return 'Unknown';
 
     if (cardNumber!.startsWith('4')) {
@@ -106,10 +126,39 @@ class PaymentMethod {
 }
 
 class PaymentMethods extends StatefulWidget {
-  const PaymentMethods({Key? key}) : super(key: key);
+  final String? userId; // Add userId parameter for user isolation
+  
+  const PaymentMethods({Key? key, this.userId}) : super(key: key);
 
   @override
   State<PaymentMethods> createState() => _PaymentMethodsState();
+
+  // Static method to clear payment methods when user signs up or logs out
+  static Future<void> clearPaymentMethods([String? userId]) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = userId != null ? 'user_payment_methods_$userId' : 'user_payment_methods';
+    await prefs.remove(key);
+  }
+
+  // Static method to clear all user data (for complete cleanup)
+  static Future<void> clearAllUserData([String? userId]) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (userId != null) {
+      // Clear specific user data
+      await prefs.remove('user_payment_methods_$userId');
+      // Add other user-specific data keys here if needed
+    } else {
+      // Clear generic payment methods (for backward compatibility)
+      await prefs.remove('user_payment_methods');
+    }
+  }
+
+  // Static method to clear payment methods for user signup
+  static Future<void> clearOnSignup(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('user_payment_methods_$userId');
+    await prefs.remove('user_payment_methods'); // Also clear generic data
+  }
 }
 
 class _PaymentMethodsState extends State<PaymentMethods> {
@@ -124,36 +173,24 @@ class _PaymentMethodsState extends State<PaymentMethods> {
 
   Future<void> _loadPaymentMethods() async {
     final prefs = await SharedPreferences.getInstance();
-    final paymentMethodsJson = prefs.getString('user_payment_methods');
+    // Use user-specific key if userId is provided, otherwise use generic key for backward compatibility
+    final key = widget.userId != null ? 'user_payment_methods_${widget.userId}' : 'user_payment_methods';
+    final paymentMethodsJson = prefs.getString(key);
 
     setState(() {
       if (paymentMethodsJson != null) {
-        final List<dynamic> decodedList = jsonDecode(paymentMethodsJson);
-        _paymentMethods =
-            decodedList.map((item) => PaymentMethod.fromJson(item)).toList();
-      } else {
-        // If no payment methods found, add sample methods
-        if (_paymentMethods.isEmpty) {
-          _paymentMethods = [
-            PaymentMethod(
-              id: '1',
-              type: 'card',
-              name: 'Personal Card',
-              cardNumber: '4111111111111111',
-              cardHolderName: 'John Doe',
-              expiryDate: '12/25',
-              isDefault: true,
-            ),
-            PaymentMethod(
-              id: '2',
-              type: 'upi',
-              name: 'Personal UPI',
-              upiId: 'johndoe@okbank',
-              isDefault: false,
-            ),
-          ];
-          _savePaymentMethods();
+        try {
+          final List<dynamic> decodedList = jsonDecode(paymentMethodsJson);
+          _paymentMethods =
+              decodedList.map((item) => PaymentMethod.fromJson(item)).toList();
+        } catch (e) {
+          // If there's an error parsing saved data, clear it and start fresh
+          _paymentMethods = [];
+          _clearStoredPaymentMethods();
         }
+      } else {
+        // No payment methods found - start with empty list for security
+        _paymentMethods = [];
       }
       _isLoading = false;
     });
@@ -163,7 +200,16 @@ class _PaymentMethodsState extends State<PaymentMethods> {
     final prefs = await SharedPreferences.getInstance();
     final paymentMethodsJson =
         jsonEncode(_paymentMethods.map((e) => e.toJson()).toList());
-    await prefs.setString('user_payment_methods', paymentMethodsJson);
+    // Use user-specific key if userId is provided, otherwise use generic key for backward compatibility
+    final key = widget.userId != null ? 'user_payment_methods_${widget.userId}' : 'user_payment_methods';
+    await prefs.setString(key, paymentMethodsJson);
+  }
+
+  Future<void> _clearStoredPaymentMethods() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Use user-specific key if userId is provided, otherwise use generic key for backward compatibility
+    final key = widget.userId != null ? 'user_payment_methods_${widget.userId}' : 'user_payment_methods';
+    await prefs.remove(key);
   }
 
   void _setDefaultPaymentMethod(String id) {
@@ -191,6 +237,169 @@ class _PaymentMethodsState extends State<PaymentMethods> {
 
       _savePaymentMethods();
     });
+  }
+
+  /// Authenticate user before allowing them to edit payment method
+  Future<void> _editPaymentMethodWithAuth(PaymentMethod method) async {
+    try {
+      // First try device biometric authentication
+      final bool isDeviceSupported = await LocalAuthentication().isDeviceSupported();
+      
+      if (isDeviceSupported) {
+        try {
+          final LocalAuthentication localAuth = LocalAuthentication();
+          final bool isAuthenticated = await localAuth.authenticate(
+            localizedReason: 'Authenticate to edit your payment method',
+            options: const AuthenticationOptions(
+              biometricOnly: false, // Allow PIN/Password fallback
+              useErrorDialogs: true,
+              stickyAuth: true,
+            ),
+          );
+
+          if (isAuthenticated) {
+            _proceedToEdit(method);
+            return;
+          }
+        } catch (e) {
+          print('Biometric auth failed: $e');
+          // Continue to fallback authentication
+        }
+      }
+
+      // Fallback: Simple PIN authentication
+      await _showPinAuthDialog(method);
+    } catch (e) {
+      print('Authentication error: $e');
+      // If all else fails, show simple confirmation dialog
+      await _showSimpleAuthConfirmation(method);
+    }
+  }
+
+  /// Simple PIN-based authentication fallback
+  Future<void> _showPinAuthDialog(PaymentMethod method) async {
+    final TextEditingController pinController = TextEditingController();
+    
+    final bool? isAuthenticated = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.security, color: acerPrimaryColor),
+            SizedBox(width: 8),
+            Text('Security Verification'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Enter your security PIN to edit payment method:',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: pinController,
+              obscureText: true,
+              keyboardType: TextInputType.number,
+              maxLength: 4,
+              decoration: const InputDecoration(
+                labelText: 'Security PIN',
+                hintText: 'Enter 4 digit PIN',
+                prefixIcon: Icon(Icons.lock),
+                border: OutlineInputBorder(),
+                counterText: '', // Hide character counter
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Enter the correct 4-digit PIN to continue',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final pin = pinController.text.trim();
+              // Only accept the specific password 5733
+              if (pin == '5733') {
+                Navigator.pop(context, true);
+              } else {
+                // Show error and don't allow access
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Incorrect PIN. Access denied.'),
+                    backgroundColor: Colors.red,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+                // Clear the input field for retry
+                pinController.clear();
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: acerPrimaryColor,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Verify'),
+          ),
+        ],
+      ),
+    );
+
+    if (isAuthenticated == true) {
+      _proceedToEdit(method);
+    }
+  }
+
+  /// Simple confirmation dialog as last resort
+  Future<void> _showSimpleAuthConfirmation(PaymentMethod method) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.error, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Access Denied'),
+          ],
+        ),
+        content: const Text(
+          'Authentication failed. Cannot edit payment method without proper authentication.\n\nPlease contact support if you need assistance.',
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+    // Do not proceed to edit - authentication failed
+  }
+
+  void _proceedToEdit(PaymentMethod method) {
+    final type = method.type == 'card'
+        ? PaymentMethodType.card
+        : method.type == 'upi'
+            ? PaymentMethodType.upi
+            : PaymentMethodType.netBanking;
+    _addEditPaymentMethod(type, method);
   }
 
   void _showAddPaymentMethodBottomSheet() {
@@ -463,48 +672,105 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                     ],
                   ),
                 ),
-                if (method.isDefault)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: acerPrimaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: acerPrimaryColor),
-                    ),
-                    child: const Text(
-                      'Default',
-                      style: TextStyle(
-                        color: acerPrimaryColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (method.isDefault)
+                      Container(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: acerPrimaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: acerPrimaryColor),
+                        ),
+                        child: const Text(
+                          'Default',
+                          style: TextStyle(
+                            color: acerPrimaryColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    if (method.isDefault) const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.green.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.fingerprint,
+                            size: 12,
+                            color: Colors.green[700],
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            'Secure',
+                            style: TextStyle(
+                              color: Colors.green[700],
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  ],
+                ),
               ],
             ),
             if (method.type == 'card')
               Padding(
                 padding: const EdgeInsets.only(top: 16),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      method.maskedCardNumber,
-                      style: const TextStyle(
-                        fontFamily: 'monospace',
-                        fontSize: 16,
-                        letterSpacing: 1,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          method.maskedCardNumber,
+                          style: const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 16,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: acerPrimaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            method.cardType,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: acerPrimaryColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const Spacer(),
-                    Text(
-                      method.cardType,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                        fontWeight: FontWeight.w500,
+                    if (method.cardHolderName != null && method.cardHolderName!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Card Holder: ${method.cardHolderName}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[700],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -554,14 +820,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                   ),
                 const Spacer(),
                 IconButton(
-                  onPressed: () {
-                    final type = method.type == 'card'
-                        ? PaymentMethodType.card
-                        : method.type == 'upi'
-                            ? PaymentMethodType.upi
-                            : PaymentMethodType.netBanking;
-                    _addEditPaymentMethod(type, method);
-                  },
+                  onPressed: () => _editPaymentMethodWithAuth(method),
                   icon: const Icon(Icons.edit_outlined),
                   tooltip: 'Edit Payment Method',
                   color: acerPrimaryColor,
@@ -623,7 +882,11 @@ class _PaymentMethodsState extends State<PaymentMethods> {
   String _getPaymentMethodSubtitle(PaymentMethod method) {
     switch (method.type) {
       case 'card':
-        return 'Credit/Debit Card';
+        // Show card holder name if available for better identification
+        if (method.cardHolderName != null && method.cardHolderName!.isNotEmpty) {
+          return '${method.cardType} Card • ${method.cardHolderName}';
+        }
+        return '${method.cardType} Card';
       case 'upi':
         return 'UPI Payment';
       case 'netbanking':
@@ -665,6 +928,7 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
   final _cardHolderNameController = TextEditingController();
   final _expiryDateController = TextEditingController();
   final _cvvController = TextEditingController();
+  String _selectedCardType = 'Auto Detect'; // Added for manual card type selection
 
   // UPI specific fields
   final _upiIdController = TextEditingController();
@@ -683,6 +947,27 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
     'Yes Bank',
     'Bank of Baroda',
     'Punjab National Bank',
+    'Other'
+  ];
+
+  // List of card types for manual selection
+  final List<String> _cardTypesList = [
+    'Auto Detect',
+    'Visa',
+    'Mastercard',
+    'Rupay',
+    'American Express',
+    'Discover',
+    'Diners Club',
+    'SBI Card',
+    'HDFC Bank',
+    'ICICI Bank',
+    'Axis Bank',
+    'Kotak',
+    'PNB',
+    'BOB',
+    'Union Bank',
+    'Canara Bank',
     'Other'
   ];
 
@@ -706,6 +991,12 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
           }
           if (widget.paymentMethod!.expiryDate != null) {
             _expiryDateController.text = widget.paymentMethod!.expiryDate!;
+          }
+          if (widget.paymentMethod!.cvv != null) {
+            _cvvController.text = widget.paymentMethod!.cvv!;
+          }
+          if (widget.paymentMethod!.manualCardType != null) {
+            _selectedCardType = widget.paymentMethod!.manualCardType!;
           }
           break;
 
@@ -772,6 +1063,69 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
 
   void _savePaymentMethod() {
     if (_formKey.currentState!.validate()) {
+      // Show security warning for new card payments
+      if (widget.type == PaymentMethodType.card && widget.paymentMethod == null) {
+        _showSecurityWarning();
+        return;
+      }
+      _performSave();
+    }
+  }
+
+  void _showSecurityWarning() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.warning, color: Colors.red),
+            SizedBox(width: 8),
+            Text('Security Warning'),
+          ],
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'IMPORTANT SECURITY NOTICE:',
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+            ),
+            SizedBox(height: 8),
+            Text('• CVV will be stored permanently on this device'),
+            Text('• This violates PCI DSS security standards'),
+            Text('• Most legitimate apps do NOT store CVV'),
+            Text('• Your data could be at risk if device is compromised'),
+            SizedBox(height: 12),
+            Text(
+              'Do you still want to proceed?',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _performSave();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('I Understand, Save Anyway'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _performSave() {
+    if (_formKey.currentState!.validate()) {
       String typeString;
       switch (widget.type) {
         case PaymentMethodType.card:
@@ -799,6 +1153,9 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
         expiryDate: widget.type == PaymentMethodType.card
             ? _expiryDateController.text
             : null,
+        cvv: widget.type == PaymentMethodType.card
+            ? _cvvController.text
+            : null, // WARNING: Storing CVV violates security best practices
         upiId:
             widget.type == PaymentMethodType.upi ? _upiIdController.text : null,
         bankName: widget.type == PaymentMethodType.netBanking
@@ -806,12 +1163,47 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
                 ? _bankNameController.text
                 : _selectedBank)
             : null,
+        manualCardType: widget.type == PaymentMethodType.card
+            ? _selectedCardType
+            : null,
         isDefault: _isDefault,
       );
 
       widget.onSave(newMethod);
       Navigator.pop(context);
     }
+  }
+
+  bool _canGoBack() {
+    // For card type, check if CVV is filled
+    if (widget.type == PaymentMethodType.card) {
+      return _cvvController.text.trim().isNotEmpty;
+    }
+    // For other payment types, allow going back
+    return true;
+  }
+
+  Future<bool> _onWillPop() async {
+    if (!_canGoBack()) {
+      // Show dialog explaining CVV is required
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('CVV Required'),
+          content: const Text(
+            'Please enter your CVV to continue. This is required for security purposes, just like other payment apps.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return false; // Prevent going back
+    }
+    return true; // Allow going back
   }
 
   @override
@@ -831,13 +1223,28 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
         break;
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: acerPrimaryColor,
-        foregroundColor: Colors.white,
-      ),
-      body: Form(
+    return PopScope(
+      canPop: _canGoBack(),
+      onPopInvoked: (bool didPop) async {
+        if (!didPop) {
+          await _onWillPop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          backgroundColor: acerPrimaryColor,
+          foregroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () async {
+              if (await _onWillPop()) {
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ),
+        body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -889,6 +1296,27 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
                     return 'Invalid card number';
                   }
                   return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  labelText: 'Card Type',
+                  hintText: 'Select card type',
+                  prefixIcon: Icon(Icons.credit_card_outlined),
+                  border: OutlineInputBorder(),
+                ),
+                value: _selectedCardType,
+                items: _cardTypesList.map((cardType) {
+                  return DropdownMenuItem<String>(
+                    value: cardType,
+                    child: Text(cardType),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCardType = value!;
+                  });
                 },
               ),
               const SizedBox(height: 16),
@@ -951,21 +1379,34 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
                   Expanded(
                     child: TextFormField(
                       controller: _cvvController,
-                      decoration: const InputDecoration(
-                        labelText: 'CVV',
+                      decoration: InputDecoration(
+                        labelText: 'CVV *',
                         hintText: '3-4 digits',
-                        prefixIcon: Icon(Icons.security_outlined),
-                        border: OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.security_outlined),
+                        border: const OutlineInputBorder(),
+                        helperText: 'CVV will be saved permanently (Security Risk!)',
+                        helperStyle: TextStyle(
+                          color: _cvvController.text.isEmpty ? Colors.orange : Colors.red,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       keyboardType: TextInputType.number,
                       obscureText: true,
                       maxLength: 4,
+                      onChanged: (value) {
+                        // Trigger rebuild to update helper text color
+                        setState(() {});
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Required';
+                          return 'CVV is required';
                         }
-                        if (value.length < 3) {
-                          return 'Invalid CVV';
+                        if (value.length < 3 || value.length > 4) {
+                          return 'CVV must be 3-4 digits';
+                        }
+                        if (!RegExp(r'^\d+$').hasMatch(value)) {
+                          return 'CVV must contain only numbers';
                         }
                         return null;
                       },
@@ -1083,6 +1524,7 @@ class _PaymentMethodFormScreenState extends State<PaymentMethodFormScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

@@ -1,4 +1,4 @@
- import 'package:acer_app/order_details_page.dart';
+import 'package:acer_app/order_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
@@ -36,7 +36,9 @@ import 'pages/notifications_page.dart' as pages;
 import 'predator_series.dart';
 import 'swift_series.dart';
 import 'aspire_series.dart';
-import 'beautiful_product_details.dart'; 
+import 'beautiful_product_details.dart';
+import 'services/connectivity_service.dart';
+import 'pages/offline_page.dart'; 
 
 // Define Acer brand colors
 const Color acerPrimaryColor = Color(0xFF83B81A); // Acer green
@@ -4962,6 +4964,10 @@ void main() async {
   // Get shared preferences instance
   final prefs = await SharedPreferences.getInstance();
 
+  // Initialize connectivity service
+  final connectivityService = ConnectivityService();
+  await connectivityService.initialize();
+
   runApp(
     MultiProvider(
       providers: [
@@ -4973,6 +4979,8 @@ void main() async {
         ChangeNotifierProvider(create: (context) => providers.NotificationsProvider()),
         ChangeNotifierProvider(
             create: (context) => OrderProvider()), // Add OrderProvider
+        ChangeNotifierProvider.value(
+            value: connectivityService), // Add ConnectivityService
       ],
       child: const MyApp(),
     ),
@@ -4984,15 +4992,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<UserProvider, ThemeProvider>(
-      builder: (context, userProvider, themeProvider, child) {
+    return Consumer3<UserProvider, ThemeProvider, ConnectivityService>(
+      builder: (context, userProvider, themeProvider, connectivityService, child) {
         return MaterialApp(
           title: 'Acer Store',
           debugShowCheckedModeBanner: false,
           theme: themeProvider.currentTheme,
-          home: userProvider.currentUser != null
-              ? const HomePage() // User is logged in, go to HomePage
-              : const LoginPage(), // User is not logged in, go to LoginPage
+          routes: {
+            '/home': (context) => const HomePage(),
+            '/offline': (context) => const OfflinePage(),
+          },
+          home: connectivityService.isOffline
+              ? const OfflinePage() // Show offline page when disconnected
+              : userProvider.currentUser != null
+                  ? const HomePage() // User is logged in, go to HomePage
+                  : const LoginPage(), // User is not logged in, go to LoginPage
         );
       }
     );
