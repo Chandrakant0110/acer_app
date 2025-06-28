@@ -98,7 +98,8 @@ class _AboutAcerStoreState extends State<AboutAcerStore> {
                       'Dark Mode support',
                       'Profile photo can be uploaded by Gallery or Camera',
                       'Added Notification system',
-                      
+                      'Added Offline page',
+                      'Added Biometric page in payment page to edit the payment method and its password is 5733',
                     ],
                   ),
                   const SizedBox(height: 12),

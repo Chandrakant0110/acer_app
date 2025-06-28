@@ -42,117 +42,133 @@ class _LocationPageState extends State<LocationPage>
   }
 
   // Sample data for Acer stores and service centers
+  // To update map URLs: Replace the placeholder URLs with actual Google Maps links
+  // Get these links by searching for the location in Google Maps, clicking "Share",
+  // and selecting "Copy link" to get the exact location URL
   final Map<String, List<Map<String, dynamic>>> _locations = {
     'Mumbai': [
       {
         'name': 'Acer Mall - Exclusive Store',
-        'address': 'Shop no 18, Rizvi building, Milan Subway, Rizvi Nagar, MSEB Colony, Santacruz (West), Mumbai, Maharashtra 400054',
+        'address': 'Signal, Shop No. 3, Ground Floor, Shantinath C H S ltd.C.T.S. Road, Swami Vivekananda Rd, near Shimpoli, Borivali West, Mumbai, Maharashtra 400092',
         'type': 'shop',
         'lat': 19.05227,
         'lng': 72.85184,
-        'phone': '+91 9876543210',
+        'phone': '+91 9513384670',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@19.2226043,72.8508444,16z/data=!3m2!4b1!5s0x3be7b0d51245be05:0xa9f59dbb4300792c!4m6!3m5!1s0x3be7c9ec1292e357:0xe6b1a3582c600079!8m2!3d19.2226043!4d72.8534193!16s%2Fg%2F11q94qh3vd?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Service Center - Malad',
-        'address': 'Shop 204, Inorbit Mall, Malad West, Mumbai 400064',
+        'name': 'Acer Authorised Service Center @ Laptop India Corporation',
+        'address': 'Office no 22, Sundar Building Building, Laptop India Corporation, opposite to Hotel Vaishali Garden, next to Chembur Railway Station, Chembur, Mumbai, Maharashtra 400071',
         'type': 'service',
         'lat': 19.1890,
         'lng': 72.8347,
-        'phone': '+91 22 6789 1235',
+        'phone': '+91 9819557655',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Authorised+Service+Center+@+Laptop+India+Corporation/@19.062074,72.8997622,17z/data=!3m1!4b1!4m6!3m5!1s0x3be7c61fa3901c9f:0x5a4a2a71e85f3275!8m2!3d19.062074!4d72.9023371!16s%2Fg%2F11bxfhk5dw?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Premium Store - Bandra',
-        'address': 'G-18, Palladium Mall, High Street Phoenix, Lower Parel, Mumbai 400013',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': 'Rajesh Building, Police Station, 53/133, opp. Lamington Road, Krishna Kunj, Grant Road East, Shapur Baug, Grant Road, Mumbai, Maharashtra 400007',
         'type': 'shop',
         'lat': 19.0136,
         'lng': 72.8320,
-        'phone': '+91 22 6789 1236',
+        'phone': '+91 9355041241',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@18.9642791,72.7963482,13.5z/data=!4m6!3m5!1s0x3be7cf06ab665385:0xd876d17c77a5c4e!8m2!3d18.9606803!4d72.8173884!16s%2Fg%2F11vyt1hqjs?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Service Hub - Powai',
-        'address': 'Office 301, Hiranandani Business Park, Powai, Mumbai 400076',
+        'name': 'Acer Service Center',
+        'address': 'B-302, 3rd Floor, Visava Co-operative Housing Society, Bhavani Shankar Rd, near Shardashram Vidyamandir International School, Madhav Nagar Cooperative Housing Society, Dadar West, Mumbai, Maharashtra 400028',
         'type': 'service',
         'lat': 19.1197,
         'lng': 72.9073,
-        'phone': '+91 22 6789 1237',
+        'phone': '+91 022 4293 9361',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Service+Center/@19.0154904,72.832307,16.75z/data=!4m6!3m5!1s0x3be7cf3716a7dec3:0xff8540d5b543333b!8m2!3d19.0148184!4d72.8368556!16s%2Fg%2F11vys993ch?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
     ],
     'Delhi': [
       {
-        'name': 'Acer Store - Connaught Place',
-        'address': 'Shop 15, Block A, Connaught Place, New Delhi 110001',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': 'Metro Pillar 45, E-59, Vikas Marg, Veer Savarkar Block, Block G, Laxmi Nagar, Delhi, 110092',
         'type': 'shop',
         'lat': 28.6315,
         'lng': 77.2167,
-        'phone': '+91 11 4567 8901',
+        'phone': '+91 9513384257',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@28.6330011,77.2681158,14.75z/data=!4m6!3m5!1s0x390cfcab924c0b3b:0xa8418dea70e5b290!8m2!3d28.6336103!4d77.2817383!16s%2Fg%2F11b6p067yw?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Service Hub - Nehru Place',
-        'address': 'Unit 108, Nehru Place Market, New Delhi 110019',
+        'name': 'VCL Technocare Pvt.Ltd - Acer Authorised service centre Janakpuri, New Delhi',
+        'address': '2nd floor, Vishal Tower, 2nd floor 212 A, 226, District Centre, Janakpuri, Delhi, 110058',
         'type': 'service',
         'lat': 28.5494,
         'lng': 77.2519,
-        'phone': '+91 11 4567 8902',
+        'phone': '+91 9958146330',
+        'mapUrl': 'https://www.google.com/maps/place/VCL+Technocare+Pvt.Ltd+-+Acer+Authorised+service+centre+Janakpuri,+New+Delhi/@28.6285741,77.0782554,16.75z/data=!4m6!3m5!1s0x390d04bf9f81937d:0xd30691dbbbedd3ce!8m2!3d28.6291697!4d77.081314!16s%2Fg%2F11b6njvv8s?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Exclusive Store - Saket',
-        'address': 'LG-25, Select City Walk Mall, Saket District Centre, New Delhi 110017',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': 'Metro Pillar No-58, Aggarwal Chambers Block, Shop Number-2, Ground Floor, Plot No -113 -31 & 34/433, Vikas Marg, near Veer Savarkar Block, Shakarpur, New Delhi, Delhi 110092',
         'type': 'shop',
         'lat': 28.5245,
         'lng': 77.2066,
-        'phone': '+91 11 4567 8903',
+        'phone': '+91 6366527832',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@28.6341515,77.2810319,18z/data=!4m6!3m5!1s0x390cfdc77892de39:0x46605e18263d7a9b!8m2!3d28.635079!4d77.28494!16s%2Fg%2F11vhgkwdgz?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Service Center - Rajouri Garden',
-        'address': 'B-24, Rajouri Garden Main Market, New Delhi 110027',
+        'name': 'Acer Care Center',
+        'address': 'Acer Service Center, F159, West, Ganesh Nagar, Tilak Nagar, New Delhi, Delhi, 110018',
         'type': 'service',
         'lat': 28.6466,
         'lng': 77.1207,
-        'phone': '+91 11 4567 8904',
+        'phone': '+91 9971584700',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Care+Center/@28.6466,77.1207,17z/data=!3m1!4b1!4m6!3m5!1s0x390cfd22ae5c9a6b:0x7f37ed0df59ad072!8m2!3d28.634425!4d77.2833635!16s%2Fg%2F11tx5ycpry?entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
     ],
     'Bangalore': [
       {
-        'name': 'Acer Mall Store - MG Road',
-        'address': 'UB City Mall, Level 2, Vittal Mallya Road, Bangalore 560001',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': 'Shop No. 314(C), 7th main, 80 Ft road Stage 1,HRBR Layout, Next to Nilgirls Super Market Kalyan Nagar, Kammanahalli, Bengaluru, Karnataka 560043',
         'type': 'shop',
         'lat': 12.9722,
         'lng': 77.6191,
         'phone': '+91 80 2345 6789',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@13.0190054,77.6433151,15z/data=!4m6!3m5!1s0x3bae178e267a12e9:0xc982048a9f651da!8m2!3d13.0190054!4d77.6433151!16s%2Fg%2F11f5wqknf3?hl=en&entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Care - Koramangala',
-        'address': 'Forum Mall, 5th Block, Koramangala, Bangalore 560095',
+        'name': 'Acer Authorised Service Centre - Koramangala',
+        'address': 'NO 650, 2ND FLOOR 17TH MAIN, 80 Feet Rd, 6th Block, Koramangala, Bengaluru, Karnataka 560095',
         'type': 'service',
         'lat': 12.9320,
         'lng': 77.6139,
-        'phone': '+91 80 2345 6790',
+        'phone': '+91 8048501435',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Authorised+Service+Centre+-+Koramangala/@12.9373348,77.6229074,19.25z/data=!4m6!3m5!1s0x3bae158346278839:0xe80c71dc91fafe17!8m2!3d12.9373368!4d77.624113!16s%2Fg%2F11v9c3g7ws?hl=en&entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Premium Store - Indiranagar',
-        'address': '1216, 100 Feet Road, Indiranagar, Bangalore 560038',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': 'Ground Floor, SPA Plaza, No. 1094 Unit No, 48 to 51, Old Taluk Cutchery Rd, Bengaluru, Karnataka 560002',
         'type': 'shop',
         'lat': 12.9719,
         'lng': 77.6412,
-        'phone': '+91 80 2345 6791',
+        'phone': '+91 9355041493',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@12.9657577,77.5849561,15z/data=!4m6!3m5!1s0x3bae15dfe20e8f4f:0xcbe1728bf81dc994!8m2!3d12.9657577!4d77.5849561!16s%2Fg%2F11vywzftcv?hl=en&entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
-        'name': 'Acer Service Hub - Whitefield',
-        'address': 'Phoenix Marketcity, Mahadevapura, Whitefield, Bangalore 560048',
+        'name': 'Acer Authorised Service Center - Bangalore',
+        'address': 'No.40/45 Ground Floor, Landmark Near Corporation Bank, 3Rd Main, 4Th Cross, Chamrajpet, Bengaluru, Karnataka 560018',
         'type': 'service',
         'lat': 12.9973,
         'lng': 77.6957,
-        'phone': '+91 80 2345 6792',
+        'phone': '+91 7349768232',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Authorised+Service+Center+-+Bangalore/@12.9594463,77.5666101,15z/data=!4m6!3m5!1s0x3bae150bd1b34ea5:0xed3bff62f1a6cf6d!8m2!3d12.9594463!4d77.5666101!16s%2Fg%2F11w25jb9b8?hl=en&entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
     ],
     'Chennai': [
       {
-        'name': 'Acer Exclusive Store - T Nagar',
-        'address': '45, North Usman Road, T Nagar, Chennai 600017',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': '7/8, Nambi Complex, Shop No.1,2,3, Blackers Rd, Mount Road, Anna Salai, Chennai, Tamil Nadu 600002',
         'type': 'shop',
         'lat': 13.0434,
         'lng': 80.2340,
-        'phone': '+91 44 3456 7890',
+        'phone': '+91 9513234403',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@13.068272,80.27064,15z/data=!4m6!3m5!1s0x3a52661740000001:0x27a74f0669525bce!8m2!3d13.0682967!4d80.2707438!16s%2Fg%2F1tk6tbc0?hl=en&entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
       {
         'name': 'Acer Service Center - Anna Nagar',
@@ -161,14 +177,16 @@ class _LocationPageState extends State<LocationPage>
         'lat': 13.0827,
         'lng': 80.2076,
         'phone': '+91 44 3456 7891',
+        'mapUrl': 'https://maps.app.goo.gl/FFnHZV6YgLXrYwkz5',
       },
       {
-        'name': 'Acer Premium Store - Velachery',
-        'address': 'Phoenix MarketCity, Level 2, Velachery, Chennai 600042',
+        'name': 'Acer Mall - Exclusive Store',
+        'address': 'SF 204, Nexus Vijaya Mall, 183 Great Southern Trunk Rd, Arcot Rd, Vadapalani, Chennai, Tamil Nadu 600026',
         'type': 'shop',
         'lat': 12.9815,
         'lng': 80.2207,
-        'phone': '+91 44 3456 7892',
+        'phone': '+91 9513234425',
+        'mapUrl': 'https://www.google.com/maps/place/Acer+Mall+-+Exclusive+Store/@13.0505735,80.2094639,15z/data=!4m6!3m5!1s0x3a52674e3edc26c9:0x65689e46c0559361!8m2!3d13.0505735!4d80.2094639!16s%2Fg%2F11rqgyyfwt?hl=en&entry=ttu&g_ep=EgoyMDI1MDYyMy4yIKXMDSoASAFQAw%3D%3D',
       },
     ],
     'Hyderabad': [
@@ -179,6 +197,7 @@ class _LocationPageState extends State<LocationPage>
         'lat': 17.4239,
         'lng': 78.4738,
         'phone': '+91 40 4567 8901',
+        'mapUrl': 'https://maps.app.goo.gl/HFnHZV6YgLXrYwkz5',
       },
       {
         'name': 'Acer Service Hub - Hitech City',
@@ -1285,41 +1304,24 @@ class _LocationPageState extends State<LocationPage>
   }
 
   void _launchMaps(Map<String, dynamic> location) async {
-    final double lat = location['lat'];
-    final double lng = location['lng'];
-    final String name = location['name'];
+    // Check if mapUrl exists, otherwise generate from coordinates
+    String? mapUrl = location['mapUrl'];
     
-    // Create Google Maps URL with directions
-    final String googleMapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination_place_id=$name';
-    
-    // Alternative URLs for different map apps
-    final String appleMapsUrl = 'https://maps.apple.com/?daddr=$lat,$lng&dirflg=d';
-    final String universalMapsUrl = 'geo:$lat,$lng?q=$lat,$lng($name)';
+    if (mapUrl == null || mapUrl.isEmpty) {
+      // Fallback to coordinates if mapUrl is not provided
+      final double lat = location['lat'];
+      final double lng = location['lng'];
+      final String name = Uri.encodeComponent(location['name']);
+      mapUrl = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng&destination_place_id=$name';
+    }
     
     try {
-      // Try to launch Google Maps first
-      if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+      if (await canLaunchUrl(Uri.parse(mapUrl))) {
         await launchUrl(
-          Uri.parse(googleMapsUrl),
+          Uri.parse(mapUrl),
           mode: LaunchMode.externalApplication,
         );
-      } 
-      // Fallback to Apple Maps (iOS)
-      else if (await canLaunchUrl(Uri.parse(appleMapsUrl))) {
-        await launchUrl(
-          Uri.parse(appleMapsUrl),
-          mode: LaunchMode.externalApplication,
-        );
-      }
-      // Fallback to universal geo URL
-      else if (await canLaunchUrl(Uri.parse(universalMapsUrl))) {
-        await launchUrl(
-          Uri.parse(universalMapsUrl),
-          mode: LaunchMode.externalApplication,
-        );
-      }
-      else {
-        // If no maps app is available, show error
+      } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -1328,12 +1330,11 @@ class _LocationPageState extends State<LocationPage>
                   Icon(Icons.error_outline, color: Colors.white),
                   SizedBox(width: 12),
                   Expanded(
-                    child: Text('No maps application found on this device'),
+                    child: Text('Cannot open maps on this device'),
                   ),
                 ],
               ),
               backgroundColor: Colors.red[600],
-
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -1357,7 +1358,6 @@ class _LocationPageState extends State<LocationPage>
               ],
             ),
             backgroundColor: Colors.red[600],
-
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
