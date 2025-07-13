@@ -134,6 +134,12 @@ class _AddressManagementState extends State<AddressManagement> {
     await prefs.setString('user_addresses', addressesJson);
   }
 
+  void _ensureDefaultAddress() {
+    if (_addresses.isNotEmpty && !_addresses.any((a) => a.isDefault)) {
+      _addresses[0] = _addresses[0].copyWith(isDefault: true);
+    }
+  }
+
   void _setDefaultAddress(String id) {
     setState(() {
       _addresses = _addresses.map((address) {
@@ -153,10 +159,7 @@ class _AddressManagementState extends State<AddressManagement> {
       _addresses.removeWhere((address) => address.id == id);
 
       // If we deleted the default address, set a new default if there are any addresses left
-      if (isDefault && _addresses.isNotEmpty) {
-        _addresses[0] = _addresses[0].copyWith(isDefault: true);
-      }
-
+      _ensureDefaultAddress();
       _saveAddresses();
     });
   }
@@ -189,6 +192,7 @@ class _AddressManagementState extends State<AddressManagement> {
 
                 _addresses.add(newAddress.copyWith(isDefault: isDefault));
               }
+              _ensureDefaultAddress();
               _saveAddresses();
             });
           },

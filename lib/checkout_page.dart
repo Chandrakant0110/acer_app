@@ -115,16 +115,71 @@ class _CheckoutPageState extends State<CheckoutPage>
     cardCvvController = TextEditingController();
     upiIdController = TextEditingController();
 
+    // Add listeners to update button state live
+    cardNumberController.addListener(() => setState(() {}));
+    cardNameController.addListener(() => setState(() {}));
+    cardExpiryController.addListener(() => setState(() {}));
+    cardCvvController.addListener(() => setState(() {}));
+    upiIdController.addListener(() => setState(() {}));
+
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
-        setState(() {
-          _currentPage = _tabController.index;
-        });
-        _pageController.animateToPage(
-          _tabController.index,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
+        final newIndex = _tabController.index;
+        // Prevent navigating to REVIEW tab if payment details are invalid
+        if (newIndex == 2 && !_canProceedToReview()) {
+          // Show error and revert to previous tab
+          setState(() {
+            _showErrors = true;
+          });
+          // Animate back to payment tab
+          _tabController.animateTo(_currentPage);
+          _pageController.animateToPage(
+            _currentPage,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+          // Show a beautiful error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.white, size: 24),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Text(
+                        'Please fill all required payment details before proceeding to review.',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              backgroundColor: Colors.red[700],
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              margin: const EdgeInsets.all(12),
+              duration: const Duration(seconds: 4),
+              action: SnackBarAction(
+                label: 'OK',
+                textColor: Colors.white,
+                onPressed: () {},
+              ),
+            ),
+          );
+        } else {
+          setState(() {
+            _currentPage = newIndex;
+          });
+          _pageController.animateToPage(
+            newIndex,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+        }
       }
     });
 
@@ -980,21 +1035,21 @@ class _CheckoutPageState extends State<CheckoutPage>
                   // Continue button
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // Validate payment details based on selected method
-                        if (_validatePaymentDetails()) {
-                          _pageController.animateToPage(
-                            2,
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                          );
-                        } else {
-                          // Show error if validation fails
-                          setState(() {
-                            _showErrors = true;
-                          });
-                        }
-                      },
+                      onPressed: _canProceedToReview()
+                          ? () {
+                              if (_validatePaymentDetails()) {
+                                _pageController.animateToPage(
+                                  2,
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              } else {
+                                setState(() {
+                                  _showErrors = true;
+                                });
+                              }
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: acerPrimaryColor,
                         foregroundColor: Colors.white,
@@ -2728,6 +2783,30 @@ class _CheckoutPageState extends State<CheckoutPage>
   String _calculateDeliveryDate() {
     final deliveryDate = DateTime.now().add(const Duration(days: 5));
     return _formatDate(deliveryDate);
+  }
+
+  // Add a method to check if all required payment fields are filled and valid
+  bool _canProceedToReview() {
+    switch (_getPaymentMethodId(_selectedPaymentMethod)) {
+      case 'card':
+        return cardNumberController.text.isNotEmpty &&
+            cardNameController.text.isNotEmpty &&
+            cardExpiryController.text.isNotEmpty &&
+            cardCvvController.text.isNotEmpty &&
+            cardNumberController.text.replaceAll(' ', '').length == 16 &&
+            RegExp(r'^\d{2}/\d{2}$').hasMatch(cardExpiryController.text) &&
+            cardCvvController.text.length == 3;
+      case 'upi':
+        return upiIdController.text.isNotEmpty &&
+            _selectedUpiApp != null &&
+            RegExp(r'^[a-zA-Z0-9_.-]+@[a-zA-Z0-9.-]+$').hasMatch(upiIdController.text);
+      case 'netbanking':
+        return _selectedBank != null;
+      case 'cod':
+        return true;
+      default:
+        return false;
+    }
   }
 }
 
